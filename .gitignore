@@ -1,0 +1,85 @@
+# НЕ исключаем файлы в bitrix/modules/aspro.next и bitrix/templates
+!bitrix/modules/aspro.next/
+!bitrix/templates/
+
+# Исключаем папку кэша
+/bitrix/cache/
+/bitrix/managed_cache/
+/bitrix/stack_cache/
+/bitrix/tmp/
+
+# Исключаем логи и временные файлы
+/bitrix/.settings.php
+/bitrix/.settings_extra.php
+/bitrix/php_interface/dbconn.php
+/bitrix/php_interface/init.php
+/bitrix/modules/
+
+/upload/tmp/
+*.log
+*.tmp
+
+# Исключаем резервные копии
+/backup/
+/bitrix/backup/
+*.tar.gz
+*.zip
+
+# Исключаем IDE-файлы
+.idea/
+*.iml
+.vscode/
+nbproject/
+Thumbs.db
+.DS_Store
+
+# Исключаем файлы сборки
+node_modules/
+vendor/
+.env
+.env.local
+.env.production
+.env.test
+
+# Исключаем кеш composer
+/composer.lock
+/vendor/
+
+# Исключаем кэш фронтенда
+/public/build/
+
+# Исключаем другое
+*.xml
+*.csv
+*.config
+*.restore
+
+
+# Исключаем только изображения в корне проекта
+/*.jpg
+/*.jpeg
+/*.png
+/*.gif
+/*.bmp
+/*.tiff
+/*.svg
+/*.webp
+
+# Исключаем все файлы в /upload/, кроме структурных файлов
+/upload/*
+!/upload/.htaccess
+!/upload/index.php
+
+# Исключаем загруженные изображения из bitrix
+/bitrix/images/
+
+# Исключаем файлы PDF
+/*.pdf
+
+# Исключаем файлы Microsoft Office
+/*.doc
+/*.docx
+/*.xls
+/*.xlsx
+/*.ppt
+/*.pptx
