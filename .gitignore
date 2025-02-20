@@ -8,6 +8,7 @@ video/
 # НЕ исключаем нужные директории
 !bitrix/modules/
 !bitrix/modules/aspro.next/
+!bitrix/components/sotbit/
 
 !/upload/.htaccess
 !/upload/index.php
