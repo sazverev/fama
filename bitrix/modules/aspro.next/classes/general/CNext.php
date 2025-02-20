@@ -1563,7 +1563,7 @@ class CNext{
 						}
 						elseif($arOption['TYPE_SELECT'] == 'GROUP')
 						{
-							//static $arUserGroups;
+							// static $arUserGroups;
 							if($arUserGroups === null){
 								$DefaultGroupID = 0;
 								$rsGroups = CGroup::GetList($by = "id", $order = "asc", array("ACTIVE" => "Y"));

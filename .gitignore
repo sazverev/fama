@@ -1,13 +1,14 @@
 # Исключаем всю папку bitrix и upload, но оставляем важные части
-bitrix/*
+bitrix/
+bitrix/templates/
 upload/*
 mapp/
 video/
 
 # НЕ исключаем нужные директории
-bitrix/modules/*
+!bitrix/modules/
 !bitrix/modules/aspro.next/
-#!bitrix/templates/
+
 !/upload/.htaccess
 !/upload/index.php
 
