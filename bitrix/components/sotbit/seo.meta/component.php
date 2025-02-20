@@ -99,6 +99,7 @@ if (!empty($metaData['NEW_URL'])) {
     $APPLICATION->SetCurPage($metaData['NEW_URL']);
 }
 
+
 CSeoMeta::SetFilterResult($sotbitFilterResult, $arParams['SECTION_ID']); //filter result for class
 CSeoMeta::AddAdditionalFilterResults(${$arParams['FILTER_NAME']}, $arParams['KOMBOX_FILTER']);
 CSeoMeta::FilterCheck();

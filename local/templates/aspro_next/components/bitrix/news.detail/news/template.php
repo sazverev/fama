@@ -150,7 +150,7 @@
 <?endif;?>
 
 <?// show link sale?>
-<?$bShowSales =  (count($arResult['DISPLAY_PROPERTIES']['LINK_SALE']['VALUE'])>0);?>
+<?$bShowSales = (is_array($arResult['DISPLAY_PROPERTIES']['LINK_SALE']['VALUE']) && count($arResult['DISPLAY_PROPERTIES']['LINK_SALE']['VALUE'])>0);?>
 <?if($bShowSales):?>
 	<?$GLOBALS['arrSaleFilter'] = array('ID' => $arResult['DISPLAY_PROPERTIES']['LINK_SALE']['VALUE']); ?>
 	<div class="stockblock">
@@ -200,7 +200,7 @@
 			"PAGER_TEMPLATE" => ".default",
 			"DISPLAY_TOP_PAGER" => "N",
 			"DISPLAY_BOTTOM_PAGER" => "Y",
-			"PAGER_TITLE" => "Новости",
+			"PAGER_TITLE" => "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
 			"PAGER_SHOW_ALWAYS" => "N",
 			"PAGER_DESC_NUMBERING" => "N",
 			"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
