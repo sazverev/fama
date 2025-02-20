@@ -471,10 +471,10 @@ class CNext{
 		return $arValues;
 	}
 
-	public static function GetFrontParametrValue($optionCode, $SITE_ID=SITE_ID, $bStatic = true){
+	public static function GetFrontParametrValue($optionCode, $SITE_ID=SITE_ID){
 		static $arFrontParametrs;
 
-		if(!isset($arFrontParametrs) || !$bStatic)
+		if(!isset($arFrontParametrs))
 			$arFrontParametrs = self::GetFrontParametrsValues($SITE_ID);
 
 		return $arFrontParametrs[$optionCode];
@@ -492,8 +492,8 @@ class CNext{
 		static $userID;
 		if($userID === NULL)
 		{
-            global $USER;
-            $userID = $USER->GetID();
+			global $USER;
+			$userID = CUser::GetID();
 			$userID = ($userID > 0 ? $userID : 0);
 		}
 		return $userID;
@@ -826,25 +826,24 @@ class CNext{
 		$iCalledID = ++$mauth_call;?>
 		<?Bitrix\Main\Page\Frame::getInstance()->startDynamicWithID('mobile-auth-block'.$iCalledID);?>
 		<?$APPLICATION->IncludeComponent(
-	"bitrix:menu", 
-	"cabinet_mobile", 
-	array(
-		"COMPONENT_TEMPLATE" => "cabinet_mobile",
-		"MENU_CACHE_TIME" => "172800",
-		"MENU_CACHE_TYPE" => "A",
-		"MENU_CACHE_USE_GROUPS" => "Y",
-		"MENU_CACHE_GET_VARS" => array(
-		),
-		"DELAY" => "N",
-		"MAX_LEVEL" => "1",
-		"ALLOW_MULTI_SELECT" => "Y",
-		"CACHE_SELECTED_ITEMS" => "N",
-		"ROOT_MENU_TYPE" => "cabinet",
-		"CHILD_MENU_TYPE" => "left",
-		"USE_EXT" => "Y"
-	),
-	false
-);?>
+			"bitrix:menu",
+			"cabinet_mobile",
+			Array(
+				"COMPONENT_TEMPLATE" => "cabinet_mobile",
+				"MENU_CACHE_TIME" => "3600000",
+				"MENU_CACHE_TYPE" => "A",
+				"MENU_CACHE_USE_GROUPS" => "Y",
+				"MENU_CACHE_GET_VARS" => array(
+				),
+				"DELAY" => "N",
+				"MAX_LEVEL" => \Bitrix\Main\Config\Option::get(self::moduleID, "MAX_DEPTH_MENU", 2),
+				"ALLOW_MULTI_SELECT" => "Y",
+				"CACHE_SELECTED_ITEMS" => "N",
+				"ROOT_MENU_TYPE" => "cabinet",
+				"CHILD_MENU_TYPE" => "left",
+				"USE_EXT" => "Y"
+			)
+		);?>
 		<?Bitrix\Main\Page\Frame::getInstance()->finishDynamicWithID('mobile-auth-block'.$iCalledID);?>
 	<?}
 
@@ -1516,7 +1515,7 @@ class CNext{
 					{
 						if($arOption['TYPE_SELECT'] == 'STORES')
 						{
-							//static $bStores;
+							static $bStores;
 							if ($bStores === null){
 								$bStores = false;
 								if(\Bitrix\Main\Loader::includeModule('catalog')){
@@ -1563,7 +1562,7 @@ class CNext{
 						}
 						elseif($arOption['TYPE_SELECT'] == 'GROUP')
 						{
-							//static $arUserGroups;
+							static $arUserGroups;
 							if($arUserGroups === null){
 								$DefaultGroupID = 0;
 								$rsGroups = CGroup::GetList($by = "id", $order = "asc", array("ACTIVE" => "Y"));
@@ -3974,8 +3973,7 @@ class CNext{
 					$templateRow = '';
 					$class_title.= (($arProp["HINT"] && $arProp["SHOW_HINTS"] == "Y") ? ' whint char_name' : '');
 					$hint_block = (($arProp["HINT"] && $arProp["SHOW_HINTS"]=="Y") ? '<div class="hint"><span class="icon"><i>?</i></span><div class="tooltip">'.$arProp["HINT"].'</div></div>' : '');
-					
-if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view!= 'block' ){
+					if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view!= 'block' ){
 						$templateRow .= '<div class="bx_item_detail_size" '.$arProp['STYLE'].' id="#ITEM#_prop_'.$arProp['ID'].'_cont" data-display_type="SELECT" data-id="'.$arProp['ID'].'">'.
 		'<span class="'.$class_title.'">'.$hint_block.'<span>'.htmlspecialcharsex($arProp['NAME']).'</span></span>'.
 		'<div class="bx_size_scroller_container form-control bg"><div class="bx_size"><select id="#ITEM#_prop_'.$arProp['ID'].'_list" class="list_values_wrapper">';
@@ -4079,7 +4077,7 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 								$arOneValue['NAME'] = htmlspecialcharsbx($arOneValue['NAME']);
 								if($isHasPicture && ($arOneValue['NEW_PICT'] || (isset($arOneValue['PICT']['SRC']) && $arOneValue['PICT']['SRC'])))
 								{
-									$str = '<span class="cnt1" style="padding: 0;"><span class="cnt_item'.($arOneValue['NEW_PICT'] ? ' pp' : '').'" style="background-image:url(\''.($arOneValue['NEW_PICT'] ? $arOneValue['NEW_PICT']['SRC'] : $arOneValue['PICT']['SRC']).'\');" data-obgi="url(\''.$arOneValue['PICT']['SRC'].'\')" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"></span></span>';
+									$str = '<span class="cnt1"><span class="cnt_item'.($arOneValue['NEW_PICT'] ? ' pp' : '').'" style="background-image:url(\''.($arOneValue['NEW_PICT'] ? $arOneValue['NEW_PICT']['SRC'] : $arOneValue['PICT']['SRC']).'\');" data-obgi="url(\''.$arOneValue['PICT']['SRC'].'\')" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"></span></span>';
 									if(isset($arOneValue['NO_PHOTO']) && $arOneValue['NO_PHOTO'] == 'Y')
 										$str = '<span class="cnt1 nf"><span class="cnt_item" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"><span class="bg" style="background-image:url(\''.$arOneValue['PICT']['SRC'].'\');"></span></span></span>';
 									$templateRow .= '<li class="item '.$arOneValue['CLASS'].'" '.$arOneValue['STYLE'].' data-treevalue="'.$arProp['ID'].'_'.$arOneValue['ID'].'" data-showtype="li" data-onevalue="'.$arOneValue['ID'].'"><i title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"></i>'.$str.'</li>';
@@ -4098,14 +4096,10 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 			}
 		}else{
 			foreach ($arSkuProps as $key=>&$arProp){
-
 				$templateRow = '';
 				$class_title.= (($arProp["HINT"] && $arProp["SHOW_HINTS"] == "Y") ? ' whint char_name' : '');
 				$hint_block = (($arProp["HINT"] && $arProp["SHOW_HINTS"]=="Y") ? '<div class="hint"><span class="icon"><i>?</i></span><div class="tooltip">'.$arProp["HINT"].'</div></div>' : '');
 				if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view!= 'block' ){
-
-
-
 					$templateRow .= '<div class="bx_item_detail_size" '.$arProp['STYLE'].' id="#ITEM#_prop_'.$arProp['ID'].'_cont" data-display_type="SELECT" data-id="'.$arProp['ID'].'">'.
 	'<span class="'.$class_title.'">'.$hint_block.'<span>'.htmlspecialcharsex($arProp['NAME']).'</span></span>'.
 	'<div class="bx_size_scroller_container form-control bg"><div class="bx_size"><select id="#ITEM#_prop_'.$arProp['ID'].'_list" class="list_values_wrapper">';
@@ -4123,13 +4117,6 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 					}
 					$templateRow .= '</select></div>'.
 	'</div></div>';
-
-
-
-
-
-
-
 				}elseif ('TEXT' == $arProp['SHOW_MODE']){
 					$templateRow .= '<div class="bx_item_detail_size" '.$arProp['STYLE'].' id="#ITEM#_prop_'.$arProp['ID'].'_cont" data-display_type="LI" data-id="'.$arProp['ID'].'">'.
 	'<span class="'.$class_title.'">'.$hint_block.'<span>'.htmlspecialcharsex($arProp['NAME']).'</span></span>'.
@@ -4201,84 +4188,35 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 
 					if($isHasPicture)
 					{
-
-
-
-?>
-
-
-
-
-<?
-
-
-
-						$templateRow .= '<div class="bx_item_detail_scu"  id="#ITEM#_prop_'.$arProp['ID'].'_cont" data-display_type="LI" data-id="'.$arProp['ID'].'">'.
-	'<span class="'.$class_title.'">'.$hint_block.'<span>'.htmlspecialcharsex($arProp['NAME']).' </span></span>'.
-	'
-<div class="bx_size_scroller_container form-control bg" style="
-    height: 37px;
-    background: #EBEDEF;
-    padding: 9px 12px 6px 12px;
-    border-radius: 70px;
-    width: auto;
-    color: #555;
-" id="twst2"><div class="bx_size"><div id="zatemnenie1"><a href="#zatemnenie" tyle="
-    background: #0000;
-"><div id="myDiv2">Выберите цвет</div></a></div></div></div><div id="zatemnenie" class="popup">
-      <div id="okno"><div class="form_head" style="
-    border-bottom: 2px solid;
-    padding: 0px 0px 35px 0px;
-    border-bottom-color: #6ea13a;
-    color: #000;
-    font-size: 20px;
-
-">
-					<h2>Выберите цвет</h2><a href="#" class="close"><i></i></a>
-					</div><div class="bx_scu_scroller_container"><div class="bx_scu"><ul id="#ITEM#_prop_'.$arProp['ID'].'_list" class="list_values_wrapper" style="
-    background: 0;
-">';
+						$templateRow .= '<div class="bx_item_detail_scu" '.$arProp['STYLE'].' id="#ITEM#_prop_'.$arProp['ID'].'_cont" data-display_type="LI" data-id="'.$arProp['ID'].'">'.
+	'<span class="'.$class_title.'">'.$hint_block.'<span>'.htmlspecialcharsex($arProp['NAME']).'</span></span>'.
+	'<div class="bx_scu_scroller_container"><div class="bx_scu"><ul id="#ITEM#_prop_'.$arProp['ID'].'_list" class="list_values_wrapper">';
 					}
 					else
 					{
-						$templateRow .= '<div class="bx_item_detail_size"  id="#ITEM#_prop_'.$arProp['ID'].'_cont" data-display_type="LI" data-id="'.$arProp['ID'].'">'.
+						$templateRow .= '<div class="bx_item_detail_size" '.$arProp['STYLE'].' id="#ITEM#_prop_'.$arProp['ID'].'_cont" data-display_type="LI" data-id="'.$arProp['ID'].'">'.
 	'<span class="'.$class_title.'">'.htmlspecialcharsex($arProp['NAME']).'</span>'.
 	'<div class="bx_size_scroller_container"><div class="bx_size"><ul id="#ITEM#_prop_'.$arProp['ID'].'_list" class="list_values_wrapper">';
 
 					}
 					foreach ($arProp['VALUES'] as $arOneValue){
-						if($arOneValue['ID']>0){
+						//if($arOneValue['ID']>0){
 							$arOneValue['NAME'] = htmlspecialcharsbx($arOneValue['NAME']);
 							if($isHasPicture && ($arOneValue['NEW_PICT'] || (isset($arOneValue['PICT']['SRC']) && $arOneValue['PICT']['SRC'])))
 							{
-								$str = '<span class="cnt1" style="background: #0000; border-radius: 0;" onclick="Smart()"><a href="##" class="close1" ><span id="jpg2" class="cnt_item'.($arOneValue['NEW_PICT'] ? ' pp' : '').'" style="border-radius: 0; background-image:url(\''.($arOneValue['NEW_PICT'] ? $arOneValue['NEW_PICT']['SRC'] : $arOneValue['PICT']['SRC']).'\'); float: left;" data-obgi="url(\''.$arOneValue['PICT']['SRC'].'\') float: left;" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"></span></a></span><span id="myDiv3" style=" color:#203113;/*color: #6ba83c;*/ font-size: 14px;
-    background: #0000;
-">'.$arOneValue['NAME'].'<span id="myDiv1"  style="display: none; background-image:url(\''.($arOneValue['NEW_PICT'] ? $arOneValue['NEW_PICT']['SRC'] : $arOneValue['PICT']['SRC']).'\');">'.$arOneValue['NAME'].'</span></span>';
+								$str = '<span class="cnt1"><span class="cnt_item'.($arOneValue['NEW_PICT'] ? ' pp' : '').'" style="background-image:url(\''.($arOneValue['NEW_PICT'] ? $arOneValue['NEW_PICT']['SRC'] : $arOneValue['PICT']['SRC']).'\');" data-obgi="url(\''.$arOneValue['PICT']['SRC'].'\')" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"></span></span>';
 								if(isset($arOneValue['NO_PHOTO']) && $arOneValue['NO_PHOTO'] == 'Y')
-									$str = '<span class="cnt1 nf"><span id="jpg2" class="cnt_item" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"><span class="bg" style="background-image:url(\''.$arOneValue['PICT']['SRC'].'\');"></span></span></span>';
-								$templateRow .= '<li class="item '.$arOneValue['CLASS'].'" '.$arOneValue['STYLE'].' data-treevalue="'.$arProp['ID'].'_'.$arOneValue['ID'].'" data-showtype="li" data-onevalue="'.$arOneValue['ID'].'" style="
-    width: 137px;
-"><i title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"></i>'.$str.'</li>';
+									$str = '<span class="cnt1 nf"><span class="cnt_item" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"><span class="bg" style="background-image:url(\''.$arOneValue['PICT']['SRC'].'\');"></span></span></span>';
+								$templateRow .= '<li class="item '.$arOneValue['CLASS'].'" '.$arOneValue['STYLE'].' data-treevalue="'.$arProp['ID'].'_'.$arOneValue['ID'].'" data-showtype="li" data-onevalue="'.$arOneValue['ID'].'"><i title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"></i>'.$str.'</li>';
 							}
 							else
 							{
-								$templateRow .= '<a href="#" class="close1"><li class="item '.$arOneValue['CLASS'].'" '.$arOneValue['STYLE'].' data-treevalue="'.$arProp['ID'].'_'.$arOneValue['ID'].'" data-showtype="li" data-onevalue="'.$arOneValue['ID'].'" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"><i></i><span class="cnt" style="width: 157px;">'.$arOneValue['NAME'].'</span></li></a>';
+								$templateRow .= '<li class="item '.$arOneValue['CLASS'].'" '.$arOneValue['STYLE'].' data-treevalue="'.$arProp['ID'].'_'.$arOneValue['ID'].'" data-showtype="li" data-onevalue="'.$arOneValue['ID'].'" title="'.$arProp['NAME'].': '.$arOneValue['NAME'].'"><i></i><span class="cnt">'.$arOneValue['NAME'].'</span></li>';
 							}
-						}
+						//}
 					}
-					$templateRow .= '</ul><div class="form_head" style="
-    border-bottom: 2px solid;
-    padding: 0px 75px 35px 35px;
-    border-bottom-color: #6ea13a;
-    color: #000;
-    font-size: 20px;
-"></div>'.
-
-
-	'</div></div><!--<h2 style="
-    margin: 10px;
-    font-size: 18px;
-"><a href="##" class="close1" id="update">Выбрать</a></h2>--></div></div></div>';
+					$templateRow .= '</ul></div>'.
+	'</div></div>';
 				}
 
 				$arSkuTemplate[$arProp['CODE']] = $templateRow;
@@ -4741,6 +4679,8 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 			$bUserAuthorized = $USER->IsAuthorized();
 		}
 
+
+
 		$buttonText = $buttonHTML = $buttonACTION = '';
 		$quantity=$ratio=1;
 		$max_quantity=0;
@@ -4771,21 +4711,21 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 		$partProp=($arParams["PARTIAL_PRODUCT_PROPERTIES"] ? $arParams["PARTIAL_PRODUCT_PROPERTIES"] : "" );
 		$addProp=($arParams["ADD_PROPERTIES_TO_BASKET"] ? $arParams["ADD_PROPERTIES_TO_BASKET"] : "" );
 		$emptyProp=$arItem["EMPTY_PROPS_JS"];
+		global $arTheme;
 		if($arItem["OFFERS"]){
-			global $arTheme;
-			$type_sku = is_array($arTheme) ? (isset($arTheme["TYPE_SKU"]["VALUE"]) ? $arTheme["TYPE_SKU"]["VALUE"] : $arTheme["TYPE_SKU"]) : 'TYPE_1';
-			if(!$bDetail && $arItem["OFFERS_MORE"] != "Y" && $type_sku != "TYPE_2"){
+			$type_sku = (isset($arTheme["TYPE_SKU"]["VALUE"]) ? $arTheme["TYPE_SKU"]["VALUE"] : $arTheme["TYPE_SKU"]);
+			if(!$bDetail && $arItem["OFFERS_MORE"] != "Y" && (is_array($arTheme) && $type_sku != "TYPE_2")){
 				$buttonACTION = 'ADD';
 				$buttonText = array($arAddToBasketOptions['EXPRESSION_ADDTOBASKET_BUTTON_DEFAULT'], $arAddToBasketOptions['EXPRESSION_ADDEDTOBASKET_BUTTON_DEFAULT']);
 				$buttonHTML = '<span class="btn btn-default transition_bg '.$class_btn.' read_more1 to-cart animate-load" id="'.$arItemIDs['BUY_LINK'].'" data-offers="N" data-iblockID="'.$arItem["IBLOCK_ID"].'" data-item="'.$arItem["ID"].'"><i></i><span>'.$buttonText[0].'</span></span><a rel="nofollow" href="'.$basketUrl.'" id="'.$arItemIDs['BASKET_LINK'].'" class="'.$class_btn.' in-cart btn btn-default transition_bg" data-item="'.$arItem["ID"].'"  style="display:none;"><i></i><span>'.$buttonText[1].'</span></a>';
 			}
-			elseif(($bDetail && $arItem["FRONT_CATALOG"] == "Y") || $arItem["OFFERS_MORE"]=="Y" || $type_sku == "TYPE_2"){
+			elseif(($bDetail && $arItem["FRONT_CATALOG"] == "Y") || $arItem["OFFERS_MORE"]=="Y" || (is_array($arTheme) && $type_sku == "TYPE_2")){
 				$buttonACTION = 'MORE';
 				$buttonText = array($arAddToBasketOptions['EXPRESSION_READ_MORE_OFFERS_DEFAULT']);
 				$buttonHTML = '<a class="btn btn-default basket read_more" rel="nofollow" href="'.$arItem["DETAIL_PAGE_URL"].'" data-item="'.$arItem["ID"].'">'.$buttonText[0].'</a>';
 			}
 		}
-		elseif(isset($arItem["PRODUCT"]["TYPE"]) && $arItem["PRODUCT"]["TYPE"] == 2 && !$bDetail) {
+		elseif(isset($arItem["PRODUCT"]["TYPE"]) && $arItem["PRODUCT"]["TYPE"] == 2) {
 			$buttonACTION = 'MORE';
 			$buttonText = array($arAddToBasketOptions['EXPRESSION_READ_MORE_OFFERS_DEFAULT']);
 			$buttonHTML = '<a class="btn btn-default basket read_more" rel="nofollow" href="'.$arItem["DETAIL_PAGE_URL"].'" data-item="'.$arItem["ID"].'">'.$buttonText[0].'</a>';
@@ -5283,36 +5223,21 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 			<?if(self::getShowBasket()):?>
 				<?if($arFrontParametrs['USE_REGIONALITY'] == 'Y')
 					CSaleBasket::UpdateBasketPrices(CSaleBasket::GetBasketUserID(), SITE_ID);?>
-				<?$APPLICATION->IncludeComponent(
-	"bitrix:sale.basket.basket.line", 
-	"actual", 
-	array(
-		"PATH_TO_BASKET" => SITE_DIR."basket/",
-		"PATH_TO_ORDER" => SITE_DIR."order/",
-		"SHOW_DELAY" => "Y",
-		"SHOW_PRODUCTS" => "Y",
-		"SHOW_EMPTY_VALUES" => "Y",
-		"SHOW_NOTAVAIL" => "Y",
-		"SHOW_SUBSCRIBE" => "N",
-		"SHOW_IMAGE" => "Y",
-		"SHOW_PRICE" => "Y",
-		"SHOW_SUMMARY" => "Y",
-		"SHOW_NUM_PRODUCTS" => "Y",
-		"SHOW_TOTAL_PRICE" => "Y",
-		"HIDE_ON_BASKET_PAGES" => "N",
-		"COMPONENT_TEMPLATE" => "actual",
-		"SHOW_PERSONAL_LINK" => "Y",
-		"PATH_TO_PERSONAL" => SITE_DIR."personal/",
-		"SHOW_AUTHOR" => "N",
-		"PATH_TO_AUTHORIZE" => "",
-		"SHOW_REGISTRATION" => "Y",
-		"PATH_TO_REGISTER" => SITE_DIR."login/",
-		"PATH_TO_PROFILE" => SITE_DIR."personal/",
-		"POSITION_FIXED" => "N",
-		"MAX_IMAGE_SIZE" => "70"
-	),
-	false
-);?>
+				<?$APPLICATION->IncludeComponent( "bitrix:sale.basket.basket.line", "actual", Array(
+					"PATH_TO_BASKET" => SITE_DIR."basket/",
+					"PATH_TO_ORDER" => SITE_DIR."order/",
+					"SHOW_DELAY" => "Y",
+					"SHOW_PRODUCTS"=>"Y",
+					"SHOW_EMPTY_VALUES" => "Y",
+					"SHOW_NOTAVAIL" => "N",
+					"SHOW_SUBSCRIBE" => "N",
+					"SHOW_IMAGE" => "Y",
+					"SHOW_PRICE" => "Y",
+					"SHOW_SUMMARY" => "Y",
+					"SHOW_NUM_PRODUCTS" => "Y",
+					"SHOW_TOTAL_PRICE" => "Y",
+					"HIDE_ON_BASKET_PAGES" => "N"
+				) );?>
 			<?endif;?>
 		<?Bitrix\Main\Page\Frame::getInstance()->finishDynamicWithID('basketitems-component-block', '');?>
 		<?if($arFrontParametrs['SHOW_LICENCE'] == 'Y')
@@ -5502,101 +5427,106 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 	<?}
 
 	public static function showEmail($class = ''){
-		static $email_call;
 		global $arRegion, $APPLICATION;
-
+		static $email_call;
 		$iCalledID = ++$email_call;
-		$regionId = ($arRegion ? $arRegion['ID'] : '');
+		$regionId = ($arRegion ? $arRegion['ID'] : '');?>
 
-		if($arRegion){
-			$frame = new \Bitrix\Main\Page\FrameHelper('email-block'.$iCalledID);
-			$frame->begin();
-		}
-		?>
 		<?if($arRegion):?>
-			<?if($arRegion['PROPERTY_EMAIL_VALUE']):?>
+		<?$frame = new \Bitrix\Main\Page\FrameHelper('email-block'.$iCalledID);?>
+		<?$frame->begin();?>
+		<?endif;?>
+
+			<?if($arRegion):?>
+				<?if($arRegion['PROPERTY_EMAIL_VALUE']):?>
+					<div <?=($class ? 'class="'.$class.'"' : '')?>>
+						<?foreach($arRegion['PROPERTY_EMAIL_VALUE'] as $value):?>
+							<a href="mailto:<?=$value;?>" target="_blank"><?=$value;?></a>
+						<?endforeach;?>
+					</div>
+				<?endif;?>
+			<?else:?>
 				<div <?=($class ? 'class="'.$class.'"' : '')?>>
-					<?foreach($arRegion['PROPERTY_EMAIL_VALUE'] as $value):?>
-						<a href="mailto:<?=$value;?>" target="_blank"><?=$value?></a>
-					<?endforeach;?>
+					<?$APPLICATION->IncludeFile(SITE_DIR."include/footer/site-email.php", array(), array(
+							"MODE" => "html",
+							"NAME" => "Address",
+							"TEMPLATE" => "include_area.php",
+						)
+					);?>
 				</div>
 			<?endif;?>
-		<?else:?>
-			<div <?=($class ? 'class="'.$class.'"' : '')?>>
-				<?$APPLICATION->IncludeFile(SITE_DIR."include/footer/site-email.php", array(), array(
-						"MODE" => "html",
-						"NAME" => "Address",
-						"TEMPLATE" => "include_area.php",
-					)
-				);?>
-			</div>
+
+		<?if($arRegion):?>
+		<?$frame->end();?>
 		<?endif;?>
-		<?
-		if($arRegion){
-			$frame->end();
-		}
-	}
+
+	<?}
 
 	public static function ShowHeaderMobilePhones($class = ''){
+		global $arRegion;
 		static $hphones_call_m;
-		global $arRegion, $arTheme;
 
 		$iCalledID = ++$hphones_call_m;
 		$arBackParametrs = self::GetBackParametrsValues(SITE_ID);
 
 		$iCountPhones = ($arRegion ? count($arRegion['PHONES']) : $arBackParametrs['HEADER_PHONES']);
-		$regionId = ($arRegion ? $arRegion['ID'] : '');
+		$regionId = ($arRegion ? $arRegion['ID'] : '');?>
 
-		if($arRegion){
-			$frame = new \Bitrix\Main\Page\FrameHelper('header-allphones-block'.$iCalledID);
-			$frame->begin();
-		}
-		?>
-		<?if($iCountPhones):?>
+		<?if($arRegion):?>
+		<?$frame = new \Bitrix\Main\Page\FrameHelper('header-allphones-block'.$iCalledID);?>
+		<?$frame->begin();?>
+		<?endif;?>
+		<?//$iCountPhones=1;?>
+		<?if($iCountPhones): // count of phones?>
 			<!-- noindex -->
-			<?=self::showIconSvg('phone', SITE_TEMPLATE_PATH.'/images/svg/phone.svg', '', $class);?>
-			<div id="mobilePhone" class="dropdown-mobile-phone">
-				<div class="wrap">
-					<div class="more_phone title"><span class="no-decript dark-color "><?=Loc::getMessage('NEXT_T_MENU_CALLBACK')?> <?=CNext::showIconSvg("close dark dark-i", SITE_TEMPLATE_PATH."/images/svg/Close.svg");?></span></div>
-					<?for($i = 0; $i < $iCountPhones; ++$i):?>
-						<?
-						$phone = ($arRegion ? $arRegion['PHONES'][$i] : $arBackParametrs['HEADER_PHONES_array_PHONE_VALUE_'.$i]);
-						$href = 'tel:'.str_replace(array(' ', '-', '(', ')'), '', $phone);
-						$description = ($arRegion ? $arRegion['PROPERTY_PHONES_DESCRIPTION'][$i] : $arBackParametrs['HEADER_PHONES_array_PHONE_DESCRIPTION_'.$i]);
-						$description = (strlen($description) ? '<span>'.$description.'</span>' : '');
-						?>
-						<div class="more_phone">
-						    <a class="dark-color <?=(strlen($description) ? '' : 'no-decript')?>" rel="nofollow" href="<?=$href?>"><?=$phone?><?=$description?></a>
-						</div>
-					<?endfor;?>
-					<?if($arTheme['SHOW_CALLBACK']['VALUE'] == 'Y'):?>
+
+			<?=self::showIconSvg('phone', SITE_TEMPLATE_PATH.'/images/svg/phone.svg', "", $class);?>
+
+			<?if($iCountPhones >= 1): // if more than one?>
+				<div id="mobilePhone" class="dropdown-mobile-phone">
+					<div class="wrap">
+						<div class="more_phone title"><span class="no-decript dark-color "><?=Loc::getMessage('NEXT_T_MENU_CALLBACK')?> <?=CNext::showIconSvg("close dark dark-i", SITE_TEMPLATE_PATH."/images/svg/Close.svg");?></span></div>
+
+						<?for($i = 0; $i < $iCountPhones; ++$i):?>
+							<?
+							$phone = ($arRegion ? $arRegion['PHONES'][$i] : $arBackParametrs['HEADER_PHONES_array_PHONE_VALUE_'.$i]);
+							$href = 'tel:'.str_replace(array(' ', '-', '(', ')'), '', $phone);
+							$description = ($arRegion ? $arRegion['PROPERTY_PHONES_DESCRIPTION'][$i] : $arBackParametrs['HEADER_PHONES_array_PHONE_DESCRIPTION_'.$i]);
+							$description = (!empty($description)) ? "<span>" . $description . "</span>" : "";
+							?>
+							<div class="more_phone">
+							    <a class="dark-color <?=(empty($description)?'no-decript':'')?>" rel="nofollow" href="<?=$href?>"><?=$phone?><?=$description?></a>
+							</div>
+						<?endfor;?>
+
 						<div class="more_phone"><a rel="nofollow" class="dark-color no-decript callback" href="" data-event="jqm" data-param-form_id="CALLBACK" data-name="callback"><?=Loc::getMessage('CALLBACK')?></a></div>
-					<?endif;?>
+					</div>
 				</div>
-			</div>
+			<?endif;?>
 			<!-- /noindex -->
 		<?endif;?>
-		<?
-		if($arRegion){
-			$frame->end();
-		}
-	}
+
+		<?if($arRegion):?>
+		<?$frame->end();?>
+		<?endif;?>
+
+	<?}
 
 	public static function ShowHeaderPhones($class = '', $bFooter = false){
-		static $hphones_call;
 		global $arRegion;
+		static $hphones_call;
 
 		$iCalledID = ++$hphones_call;
 		$arBackParametrs = self::GetBackParametrsValues(SITE_ID);
 		$iCountPhones = ($arRegion ? count($arRegion['PHONES']) : $arBackParametrs['HEADER_PHONES']);
-		$regionId = ($arRegion ? $arRegion['ID'] : '');
+		$regionId = ($arRegion ? $arRegion['ID'] : '');?>
 
-		if($arRegion){
-			$frame = new \Bitrix\Main\Page\FrameHelper('header-allphones-block'.$iCalledID);
-			$frame->begin();
-		}
-		?>
-		<?if($iCountPhones):?>
+		<?if($arRegion):?>
+		<?$frame = new \Bitrix\Main\Page\FrameHelper('header-allphones-block'.$iCalledID);?>
+		<?$frame->begin();?>
+		<?endif;?>
+
+		<?if($iCountPhones): // count of phones?>
 			<?
 			$phone = ($arRegion ? $arRegion['PHONES'][0] : $arBackParametrs['HEADER_PHONES_array_PHONE_VALUE_0']);
 			$href = 'tel:'.str_replace(array(' ', '-', '(', ')'), '', $phone);
@@ -5608,7 +5538,7 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 			<div class="phone<?=($iCountPhones > 1 ? ' with_dropdown' : '')?><?=($class ? ' '.$class : '')?>">
 				<i class="svg svg-phone"></i>
 				<a rel="nofollow" href="<?=$href?>"><?=$phone?></a>
-				<?if($iCountPhones > 1):?>
+				<?if($iCountPhones > 1): // if more than one?>
 					<div class="dropdown">
 						<div class="wrap">
 							<?for($i = 1; $i < $iCountPhones; ++$i):?>
@@ -5616,10 +5546,10 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 								$phone = ($arRegion ? $arRegion['PHONES'][$i] : $arBackParametrs['HEADER_PHONES_array_PHONE_VALUE_'.$i]);
 								$href = 'tel:'.str_replace(array(' ', '-', '(', ')'), '', $phone);
 								$description = ($arRegion ? $arRegion['PROPERTY_PHONES_DESCRIPTION'][$i] : $arBackParametrs['HEADER_PHONES_array_PHONE_DESCRIPTION_'.$i]);
-								$description = (strlen($description) ? '<span>'.$description.'</span>' : '');
+								$description = (!empty($description)) ? "<span>" . $description . "</span>" : "";
 								?>
 								<div class="more_phone">
-								    <a <?=(strlen($description) ? '' : 'class="no-decript"')?> rel="nofollow" href="<?=$href?>"><?=$phone?><?=$description?></a>
+								    <a <?=(empty($description)?'class="no-decript"':'')?> rel="nofollow" href="<?=$href?>"><?=$phone?><?=$description?></a>
 								</div>
 							<?endfor;?>
 						</div>
@@ -5631,42 +5561,44 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 				</div>
 			<?endif;?>
 		<?endif;?>
-		<?
-		if($arRegion){
-			$frame->end();
-		}
-	}
+
+		<?if($arRegion):?>
+		<?$frame->end();?>
+		<?endif;?>
+
+	<?}
 
 	public static function showFooterPhone(){
-		static $fphones_call;
 		global $arRegion;
+		static $fphones_call;
 
 		$iCalledID = ++$fphones_call;
 		$arBackParametrs = self::GetBackParametrsValues(SITE_ID);
 		$iCountPhones = ($arRegion ? count($arRegion['PHONES']) : $arBackParametrs['HEADER_PHONES']);
-		$regionId = ($arRegion ? $arRegion['ID'] : '');
+		$regionId = ($arRegion ? $arRegion['ID'] : '');?>
 
-		if($arRegion){
-			$frame = new \Bitrix\Main\Page\FrameHelper('footer-allphones-block'.$iCalledID);
-			$frame->begin();
-		}
-		?>
-		<?if($iCountPhones):?>
+		<?if($arRegion):?>
+		<?$frame = new \Bitrix\Main\Page\FrameHelper('footer-allphones-block'.$iCalledID);?>
+		<?$frame->begin();?>
+		<?endif;?>
+
+		<?if($iCountPhones): // count of phones?>
 			<?
 			$phone = ($arRegion ? $arRegion['PHONES'][0] : $arBackParametrs['HEADER_PHONES_array_PHONE_VALUE_0']);
 			$href = 'tel:'.str_replace(array(' ', '-', '(', ')'), '', $phone);
 			?>
 			<span class="phone_wrap">
 				<span>
-					<a href="<?=$href?>" rel="nofollow"><?=$phone?></a>
+					<a href="<?=$href;?>" rel="nofollow"><?=$phone;?></a>
 				</span>
 			</span>
 		<?endif;?>
-		<?
-		if($arRegion){
-			$frame->end();
-		}
-	}
+
+		<?if($arRegion):?>
+		<?$frame->end();?>
+		<?endif;?>
+
+	<?}
 
 	public static function goto404Page(){
 		global $APPLICATION;
@@ -5685,6 +5617,7 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 
 		if($bRestarted)
 			die();
+
 
 		if((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || (strtolower($_REQUEST['ajax']) == 'y'))
 		{
@@ -6188,7 +6121,8 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 			self::$arMetaParams['og:type'] = 'website';
 		if(!strlen(self::$arMetaParams['og:image']))
 		{
-			$logo = self::GetFrontParametrValue("LOGO_IMAGE", SITE_ID, false);
+			$logo = self::GetFrontParametrValue("LOGO_IMAGE");
+
 			if($logo)
 				self::$arMetaParams['og:image'] = $logo;
 			elseif(file_exists(str_replace('//', '/', $_SERVER['DOCUMENT_ROOT'].SITE_DIR.'logo.svg')))
