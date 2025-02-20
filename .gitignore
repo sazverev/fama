@@ -5,6 +5,7 @@ mapp/
 video/
 
 # НЕ исключаем нужные директории
+bitrix/modules/*
 !bitrix/modules/aspro.next/
 #!bitrix/templates/
 !/upload/.htaccess
@@ -20,7 +21,7 @@ bitrix/.settings.php
 bitrix/.settings_extra.php
 bitrix/php_interface/dbconn.php
 bitrix/php_interface/init.php
-bitrix/modules/
+
 
 # Исключаем временные файлы и резервные копии
 upload/tmp/
