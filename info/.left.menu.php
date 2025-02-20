@@ -1,0 +1,25 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"Блог", 
+		"/blog/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Производители", 
+		"/info/brands/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Возможности", 
+		"/info/more/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

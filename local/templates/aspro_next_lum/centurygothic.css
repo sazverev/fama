@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'Century Gothic';
+    font-style: normal;
+    font-weight: 300;
+    src: url("/local/templates/aspro_next/fonts/CenturyGothic.woff") format('woff');
+}
+@font-face {
+    font-family: 'AGOpusHighResolution Roman';
+    font-style: normal;
+    font-weight: 300;
+    src: url("/local/templates/aspro_next/fonts/agopushighresolution-roman.woff") format('woff');
+}

@@ -1,0 +1,39 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"Информация", 
+		"", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Онлайн-каталоги", 
+		"/company/katalogi/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Полезное", 
+		"/blog/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Видеоинструкции", 
+		"/video/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Прайс-листы", 
+		"/company/prays-listy/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

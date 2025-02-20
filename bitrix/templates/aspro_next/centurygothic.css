@@ -1,0 +1,33 @@
+@font-face {
+    font-family: 'Century Gothic';
+    font-style: normal;
+    font-weight: 300;
+    src: url("../fonts/CenturyGothic.woff") format('woff');
+}
+
+}
+@font-face {
+    font-family: 'Century Gothic';
+    font-style: revert;
+    font-weight: 400;
+    src: url("../fonts/CenturyGothic-Bold.woff") format('woff');
+}
+@font-face {
+    font-family: 'Century Gothic';
+    font-style: italic;
+    font-weight: 400;
+    src: url("../fonts/CenturyGothic-Italic.woff") format('woff');
+}
+
+@font-face {
+    font-family: 'AGOpus';
+    font-style: normal;
+    font-weight: 400;
+    src: url("../fonts/AGOpus.woff") format('woff');
+}
+@font-face {
+    font-family: 'AGOpusBold';
+    font-style: normal;
+    font-weight: 500;
+    src: url("../fonts/AGOpusBold.woff") format('woff');
+}

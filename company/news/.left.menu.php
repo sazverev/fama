@@ -1,0 +1,41 @@
+<?
+$aMenuLinks = Array();
+/*$aMenuLinks = Array(
+	Array(
+		"Новости", 
+		"/company/news/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Договор-оферта", 
+		"/include/oferta/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Оплата", 
+		"/to-customers/oplata/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Доставка", 
+		"/to-customers/dostavka/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Согласие на обработку данных", 
+		"/include/oferta/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+*/
+?>

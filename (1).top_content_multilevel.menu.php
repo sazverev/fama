@@ -1,0 +1,67 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"Главная", 
+		"/", 
+		Array(), 
+		Array("ONLY_MOBILE"=>"Y"), 
+		"" 
+	),
+	Array(
+		"···   Каталог решений", 
+		"/catalog/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Цвета", 
+		"/colors/index.php", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Колор-центр", 
+		"/services/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Сервис", 
+		"/to-customers/index.php", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Shop in Shop", 
+		"/help/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Контакты", 
+		"/contacts/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"О Компании", 
+		"/firmennye-shourumy.php", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Ещё", 
+		"/more/index.php", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

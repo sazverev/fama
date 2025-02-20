@@ -1,0 +1,195 @@
+Options -Indexes 
+ErrorDocument 404 /404.php
+
+<IfModule mod_php5.c>
+	php_flag allow_call_time_pass_reference 1
+	php_flag session.use_trans_sid off
+
+	#php_value display_errors 1
+
+	#php_value mbstring.internal_encoding UTF-8
+php_value max_input_vars 10000
+</IfModule>
+
+php_value error_log ./local/logs/error.log
+
+
+php_value auto_prepend_file "/home/p/proskuks/famaprofi/public_html/bitrix/modules/security/tools/start.php"
+
+<IfModule mod_rewrite.c>
+	Options +FollowSymLinks
+	RewriteEngine On
+	RewriteCond %{REQUEST_URI} !^/bitrix/(.*)$ 
+	RewriteCond %{QUERY_STRING} ^lang=ru$
+    RewriteRule ^(.*)$ /$1? [R=301,L]
+	
+	
+	RewriteCond %{REQUEST_URI} ^/novosti/(.*)$ 	   
+	RewriteRule ^(.*)$ /company/news/%1 [R=301,L]	
+
+    RewriteCond %{REQUEST_URI} ^/index\.php$
+    RewriteRule ^(.*)$ https://famaprofi.ru/ [R=301,L]
+	
+Redirect 301 /o-kompanii/sotrudniki/ /company/staff/
+
+Redirect 301 /catalog/dlya_vneshnikh_rabot/akrilovyj-germetik-dlya-dereva https://famaprofi.ru/catalog/dlya_vneshnikh_rabot/germetik-akrilovyj-dlya-dereva
+Redirect 301 /catalog/dlya_vneshnikh_rabot/fasad_doma/shovnyy_akrilovyy_germetik_dlya_dereva/ /catalog/dlya_vneshnikh_rabot/akrilovyy_germetik_dlya_shvov_fama_profi/
+Redirect 301 /to-customers/12-pravil-pri-rabote-s-maslami-biofa/ /poleznoe/pravila-naneseniya-biofa/
+Redirect 301 /to-customers/o-kompanii.php https://famaprofi.ru/company/fama-profi-centre/
+Redirect 301 /colors/ /color/
+#Redirect 301 /industrialnye-resheniya/ /wholesale/partner/
+Redirect 301 /info/ /company/brendy/
+Redirect 301 /to-customers/ /company/
+Redirect 301 /catalog/dlya_vneshnikh_rabot/maslo_dlya_dereva https://famaprofi.ru/catalog/dlya_vneshnikh_rabot/fasad_doma/maslo_dlya_dereva
+Redirect 301 /catalog/dlya_vneshnikh_rabot/yahtnyj-lak-dlya-verandy https://famaprofi.ru/catalog/dlya_vneshnikh_rabot/lodki_prichaly_yakhty/yahtnyj-lak-dlya-verandy
+Redirect 301 /catalog/dlya_vneshnikh_rabot/lak-yahtnyj-dlya-dereva https://famaprofi.ru/catalog/dlya_vneshnikh_rabot/lodki_prichaly_yakhty/lak-yahtnyj-dlya-dereva
+Redirect 301 /catalog/dlya_vneshnikh_rabot/po_betonu https://famaprofi.ru/catalog/dlya_vneshnikh_rabot/fasad_doma/po_betonu
+Redirect 301 /catalog/spetsialnye_produkty_biofa/ogne_bio_zashchita/1035_nahos_kontsentrat_biozashchity_dlya_drevesiny/ https://famaprofi.ru/catalog/antiseptiki_i_biozashchita/1035_biofa_nahos_kontsentrat_biozashchity_dlya_drevesiny/
+Redirect 301 /catalog/spetsialnye_produkty_biofa/ogne_bio_zashchita/ https://famaprofi.ru/catalog/antiseptiki_i_biozashchita/
+Redirect 301 /catalog/antiseptiki_i_biozashchita/antiseptik https://famaprofi.ru/catalog/antiseptiki_i_biozashchita/
+Redirect 301 /catalog/dlya_vneshnikh_rabot/kraska_dlya_domov https://famaprofi.ru/catalog/dlya_vneshnikh_rabot/fasad_doma/derevyannyj_dom
+Redirect 301 /catalog/dlya_vneshnikh_rabot/fasad_doma/maslo_dlya_dereva https://famaprofi.ru/catalog/dlya_vneshnikh_rabot/maslo
+
+RewriteCond %{HTTP_HOST} ^www\.(.*)$
+RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-l
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !/bitrix/urlrewrite.php$
+	RewriteRule ^(.*)$ /bitrix/urlrewrite.php [L]
+	RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}]
+php_value max_input_vars 10000
+
+Redirect 301 /wholesale/partner/ https://famaprofi.ru
+</IfModule>
+
+<IfModule mod_dir.c>
+	DirectoryIndex index.php index.html
+    </IfModule>
+
+<IfModule mod_expires.c>
+	ExpiresActive on
+	ExpiresByType image/jpeg "access plus 3 day"
+	ExpiresByType image/gif "access plus 3 day"
+</IfModule>
+
+
+SetEnvIfNoCase User-Agent "^PetalBot" botstop
+SetEnvIfNoCase User-Agent .*ia_archiver.* botstop
+SetEnvIfNoCase User-Agent .*ahrefsbot.* botstop
+SetEnvIfNoCase User-Agent .*backlinkcrawler.* botstop
+SetEnvIfNoCase User-Agent "SemrushBot" botstop
+SetEnvIfNoCase User-Agent "^LinkpadBot" botstop
+SetEnvIfNoCase User-Agent .*linkdexbot.* botstop
+SetEnvIfNoCase User-Agent .*majestic-12.* botstop
+SetEnvIfNoCase User-Agent .*majestic-seo.* botstop
+SetEnvIfNoCase User-Agent .*megaindex.* botstop
+SetEnvIfNoCase User-Agent .*mj12bot.* botstop
+SetEnvIfNoCase User-Agent .*rogerbot.* botstop
+SetEnvIfNoCase User-Agent .*searchmetricsbot.* botstop
+SetEnvIfNoCase User-Agent .*semrushbot.* botstop
+SetEnvIfNoCase User-Agent .*seokicks-robot.* botstop
+SetEnvIfNoCase User-Agent .*sistrix.* botstop
+SetEnvIfNoCase User-Agent .*sitebot.* botstop
+SetEnvIfNoCase User-Agent .*SeopultContentAnalyzer.* botstop
+SetEnvIfNoCase User-Agent "^CensysInspect" botstop
+SetEnvIfNoCase User-Agent .*dotbot.* botstop
+SetEnvIfNoCase User-Agent "SeznamBot" botstop
+SetEnvIfNoCase User-Agent "BLEXBot" botstop
+SetEnvIfNoCase User-Agent "2GIS.Market" botstop
+
+<Limit GET POST HEAD>
+Order Allow,Deny
+Allow from all
+Deny from env=botstop
+</Limit>
+
+
+Order Allow,Deny
+Deny from 31.148.13.80
+
+
+
+
+# BEGIN GZIP
+# mod_gzip compression (legacy, Apache 1.3)
+<IfModule mod_gzip.c>
+mod_gzip_on Yes
+mod_gzip_dechunk Yes
+mod_gzip_item_include file \.(html?|xml|txt|css|js)$
+mod_gzip_item_include handler ^cgi-script$
+mod_gzip_item_include mime ^text/.*
+mod_gzip_item_include mime ^application/x-javascript.*
+mod_gzip_item_exclude mime ^image/.*
+mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</IfModule>
+# END GZIP
+
+
+# сжатие text, html, javascript, css, xml:
+<IfModule mod_deflate.c>
+<FilesMatch "\.(html|php|txt|xml|js|css)$">
+SetOutputFilter DEFLATE
+</FilesMatch>
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Serve gzip compressed CSS files if they exist 
+    # and the client accepts gzip.
+    RewriteCond "%{HTTP:Accept-encoding}" "gzip"
+    RewriteCond "%{REQUEST_FILENAME}\.gz" -s
+    RewriteRule "^(.*)\.css" "$1\.css\.gz" [QSA]
+
+    # Serve gzip compressed JS files if they exist 
+    # and the client accepts gzip.
+    RewriteCond "%{HTTP:Accept-encoding}" "gzip"
+    RewriteCond "%{REQUEST_FILENAME}\.gz" -s
+    RewriteRule "^(.*)\.js" "$1\.js\.gz" [QSA]
+
+
+    # Serve correct content types, and prevent mod_deflate double gzip.
+    RewriteRule "\.css\.gz$" "-" [T=text/css,E=no-gzip:1]
+    RewriteRule "\.js\.gz$" "-" [T=text/javascript,E=no-gzip:1]
+
+
+    <FilesMatch "(\.js\.gz|\.css\.gz)$">
+      # Serve correct encoding type.
+      Header append Content-Encoding gzip
+
+      # Force proxies to cache gzipped & 
+      # non-gzipped css/js files separately.
+      Header append Vary Accept-Encoding
+    </FilesMatch>
+</IfModule>
+
+
+
+
+
+## EXPIRES CACHING ##
+<IfModule mod_expires.c>
+ExpiresActive On
+Header append Cache-Control "public, no-transform"
+ExpiresByType image/jpg "access plus 1 year"
+ExpiresByType image/jpeg "access plus 1 year"
+ExpiresByType image/gif "access plus 1 year"
+ExpiresByType image/png "access plus 1 year"
+ExpiresByType text/css "access plus 1 month"
+ExpiresByType application/pdf "access plus 1 month"
+ExpiresByType text/x-javascript "access plus 1 month"
+ExpiresByType application/x-shockwave-flash "access plus 1 month"
+ExpiresByType image/x-icon "access plus 1 year"
+ExpiresDefault "access plus 7 days"
+</IfModule>
+## EXPIRES CACHING ##
+
+# использование кеша браузеров - Усиливаем кеширование
+FileETag MTime Size
+<IfModule mod_expires.c>
+<filesmatch ".(jpg|jpeg|gif|png|ico|css|js)$">
+ExpiresActive on
+Header append Cache-Control "public, no-transform"
+ExpiresDefault "access plus 1 year"
+</filesmatch>
+</IfModule>
+

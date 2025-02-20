@@ -1,0 +1,1 @@
+Я принимаю <a href="/include/oferta/" target="_blank">договор-оферту</a> и согласен на <a href="/include/oferta/" target="_blank">обработку персональных данных</a>

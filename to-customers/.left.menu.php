@@ -1,0 +1,39 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"О компании", 
+		"/company/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Договор-оферта", 
+		"/include/oferta/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Оплата", 
+		"/to-customers/oplata/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Доставка", 
+		"/to-customers/dostavka/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Согласие на обработку данных", 
+		"/include/oferta/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

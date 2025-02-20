@@ -1,0 +1,39 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"Философия Biofa", 
+		"/o-kompanii/filosofiya-biofa/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Сотрудники", 
+		"/o-kompanii/sotrudniki/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Вакансии", 
+		"/o-kompanii/vakansii/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Лицензии", 
+		"/o-kompanii/litsenzii/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Политика", 
+		"/o-kompanii/politika/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

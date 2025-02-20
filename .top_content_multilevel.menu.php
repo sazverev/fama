@@ -1,0 +1,81 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"Главная", 
+		"/", 
+		Array(), 
+		Array("ONLY_MOBILE"=>"Y"), 
+		"" 
+	),
+	Array(
+		"Каталог", 
+		"/catalog/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Где купить", 
+		"/stores/", 
+		Array(), 
+		Array("ONLY_MOBILE"=>"Y"), 
+		"" 
+	),
+	Array(
+		"Акции", 
+		"/sale/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Что красим?", 
+		"/more/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Услуги", 
+		"/uslugi/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Колористика", 
+		"/color/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Центр знаний", 
+		"/blog/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Новости", 
+		"/novosti/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"О компании", 
+		"/company/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Контакты", 
+		"/company/firmennye-magaziny/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

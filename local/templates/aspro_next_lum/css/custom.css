@@ -1,0 +1,162 @@
+*//*NOTE: This file is intended for programmers. Aspro technical support is not advised to work with him.*/
+
+/* Examples (uncomment to use):*/
+
+/* Expand site width */
+/* body .wrapper { max-width: 1400px !important;  } */
+
+/* Set site background image */
+/* body {  background: url(image_source) top no-repeat; }
+
+/* Hide compare button */
+/* a.compare_item { display: none !important;  }*/
+
+div.top_top_panel{
+	width:100%;
+	height: 60px;
+	background: #222a58;	
+}
+.maxwidth-theme_top{
+	max-width: 1350px;
+	padding: 0px 30px;
+    	margin: 0 auto;
+    	background: #222a58;
+    	float: none;
+}
+.top_top_menu{
+	height: 60px;
+	width:75%;      
+}
+.top_top_menu tr td{	
+	font-family: Gotham Pro;
+	font-size: 11px;
+	/*line-height: 120%;*/	
+	letter-spacing: 0.02em;
+	text-transform: uppercase;	
+	text-align:center;
+	min-width:auto;
+	white-space: nowrap;
+	padding: 16px;
+}
+.top_top_menu tr td a{
+	color: #F3F3F3;
+
+}
+.top_top_menu tr td a:hover,
+.top_top_menu tr td a.selected{
+	color: #222a58;
+}
+/*.top_top_thin{
+	position: absolute;
+	width: 100%;
+	height: 4px;
+	left: 0px;
+	top: 60px;
+	background: #222a58;
+}*/
+ .logo-block_1{
+	text-align: left;
+}
+
+.logo-row .logo{
+	width: 100%;
+	max-width: 268px;
+}
+.ellipse{	
+	width: 4px;
+}
+.svg_block{
+	width: 100%;
+}
+
+.circl_svg{
+	width: 8px;	
+}
+.svg_block table tr td{
+	text-align: right;
+	vertical-align: middle;
+}
+.svg_block table tr td span{
+	margin-left: 16px;
+}
+
+.col-sm-3{
+	width:21%;
+}
+
+.d7 form {
+	position: relative;	
+	top: 25px;
+    margin: 0 auto;
+ 
+}
+.d7 input {
+    width: 443px;
+	height: 48px;	
+    padding-left: 15px;
+    outline: none;
+    position: relative;
+    transition: .3s linear;
+	border-radius: 90.0682px; 
+}
+.d7 input::placeholder {
+	color:#BDBDBD;
+	font-family: Gotham Pro; 
+	font-size: 14px;	
+	/*line-height: 17px; */
+	letter-spacing: 0.02em;
+	text-transform: capitalize;
+}
+
+.d7 input:hover {
+
+    border: 2px solid #222a58;   
+}
+.d7 button {
+    width: 42px;
+    height: 42px;
+    background: none;
+    border: none;
+    position: relative;
+    top: 5px; 
+    right: 50px;
+}
+.fill_bg_n .menu-row.bgcolored{
+	background: #f7f7f7;;
+ /*Блюр */
+
+backdrop-filter: blur(25px);
+}
+
+.menu-row.middle-block:not(.bglight) .mega-menu table td .wrap > a{
+	color:#000;
+	    font-size: 18px;
+    line-height: 120%;
+    align-items: center;
+    letter-spacing: 0.03em;
+}
+
+}
+
+.menu-row.middle-block:not(.bglight) .mega-menu table td.active .wrap > a, .menu-row.middle-block:not(.bglight) .mega-menu table td:not(.search-item):hover .wrap > a{
+	background: #fff;
+	color:#000;
+}
+
+.mega-menu,.dropdown-menu{
+	background: rgba(255, 255, 255);
+	color:#000;
+}
+#headerfixed .logo-row .logo img, #headerfixed .logo-row .logo svg {
+	width: auto;
+}
+.w100 {
+	width: 100%;
+}
+
+[data-property_id="143"] .bx_filter_parameters_box_title.icons_fa {
+    font-weight: bold;
+}
+[data-property_id="143"] .bx_filter_input_checkbox .bx_filter_param_text {
+    font-weight: bold;
+}

@@ -1,0 +1,6 @@
+<?
+$sSectionName = "Цвета";
+$arDirProperties = Array(
+
+);
+?>

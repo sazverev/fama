@@ -1,39 +1,42 @@
-# НЕ исключаем файлы в bitrix/modules/aspro.next и bitrix/templates
-!bitrix/modules/aspro.next/
-
-# Исключаем ненужные папки
-bitrix/
+# Исключаем всю папку bitrix и upload, но оставляем важные части
+bitrix/*
+upload/*
 mapp/
-upload/
 video/
 
-# Исключаем папку кэша
-/bitrix/cache/
-/bitrix/managed_cache/
-/bitrix/stack_cache/
-/bitrix/tmp/
+# НЕ исключаем нужные директории
+!bitrix/modules/aspro.next/
+!bitrix/templates/
+!/upload/.htaccess
+!/upload/index.php
 
-# Исключаем логи и временные файлы
-/bitrix/.settings.php
-/bitrix/.settings_extra.php
-/bitrix/php_interface/dbconn.php
-/bitrix/php_interface/init.php
-/bitrix/modules/
+# Исключаем кэш, логи и временные файлы в bitrix/
+bitrix/cache/
+bitrix/managed_cache/
+bitrix/stack_cache/
+bitrix/tmp/
+bitrix/images/
+bitrix/.settings.php
+bitrix/.settings_extra.php
+bitrix/php_interface/dbconn.php
+bitrix/php_interface/init.php
+bitrix/modules/
 
-/upload/tmp/
+# Исключаем временные файлы и резервные копии
+upload/tmp/
+backup/
+bitrix/backup/
 *.log
 *.tmp
-
-# Исключаем резервные копии
-/backup/
-/bitrix/backup/
 *.tar.gz
 *.zip
+*.gz
+*.txt
 
 # Исключаем IDE-файлы
 .idea/
-*.iml
 .vscode/
+*.iml
 nbproject/
 Thumbs.db
 .DS_Store
@@ -55,11 +58,14 @@ vendor/
 
 # Исключаем другое
 *.xml
+*.yml
 *.csv
 *.config
 *.restore
+*.html
+*.htm
 
-# Исключаем все медиафайлы
+# Исключаем медиафайлы
 # Изображения
 *.jpg
 *.jpeg
@@ -89,21 +95,15 @@ vendor/
 *.m4a
 *.wma
 
-# Исключаем все файлы в /upload/, кроме структурных файлов
-/upload/*
-!/upload/.htaccess
-!/upload/index.php
+# Исключаем файлы PDF и Microsoft Office
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
 
-# Исключаем загруженные изображения из bitrix
-/bitrix/images/
-
-# Исключаем файлы PDF
-/*.pdf
-
-# Исключаем файлы Microsoft Office
-/*.doc
-/*.docx
-/*.xls
-/*.xlsx
-/*.ppt
-/*.pptx
+# Исключаем кеш-файлы
+.cache/
+cache/

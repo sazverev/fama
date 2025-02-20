@@ -1,0 +1,60 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"Главная", 
+		"/", 
+		Array(), 
+		Array("ONLY_MOBILE"=>"Y"), 
+		"" 
+	),
+	Array(
+		"Каталог решений", 
+		"/catalog/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Цвета", 
+		"/industrialnye-resheniya/colors/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Колор-центр", 
+		"/industrialnye-resheniya/kolor-tsentr/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Профи-центр", 
+		"/industrialnye-resheniya/profi-tsentr/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Системы окраски", 
+		"/industrialnye-resheniya/sistemy-okraski/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Контакты", 
+		"/industrialnye-resheniya/contacts/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"О Компании", 
+		"/industrialnye-resheniya/o-kompanii/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>
