@@ -6,7 +6,7 @@ video/
 
 # НЕ исключаем нужные директории
 !bitrix/modules/aspro.next/
-!bitrix/templates/
+#!bitrix/templates/
 !/upload/.htaccess
 !/upload/index.php
 
