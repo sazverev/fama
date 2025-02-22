@@ -9,12 +9,15 @@ if(self::$requestVals){
 
     if($ordrVals['MESSAGE'])
         $message=unserialize($ordrVals['MESSAGE']);
-    foreach($message as $key => $sign)
-        if(in_array($key,array('service','location','street','house','flat','PVZ','name','phone','email','comment','number')))
-            $message[$key]='<br><span style="color:#FF4040">'.$sign.'</span>';
-        else{
-            $message['troubles'].='<span style="color:#FF4040">'.$sign.' ('.$key.')</span><br>';
-        }
+
+    if($message && is_array($message)){
+        foreach($message as $key => $sign)
+            if(in_array($key,array('service','location','street','house','flat','PVZ','name','phone','email','comment','number')))
+                $message[$key]='<br><span style="color:#FF4040">'.$sign.'</span>';
+            else{
+                $message['troubles'].='<span style="color:#FF4040">'.$sign.' ('.$key.')</span><br>';
+            }
+    }
     $SDEK_ID = $ordrVals['SDEK_ID'];
     $MESS_ID = $ordrVals['MESS_ID'];
     // array of form data, of not given - formed from default parametrs from options and order
@@ -148,7 +151,7 @@ if(array_key_exists($cityName,$arList['POSTAMAT'])){
     foreach($arList['POSTAMAT'][$cityName] as $code => $punkts){
         if(!array_key_exists($code,$arModdedPST[$cityName]))
             $arBPST .= $code.":true,";
-        $selected = ($ordrVals['PVZ'] == $code) ? "selected" : "";
+        $selected = ($ordrVals['PVZ'] == $code || $ordrVals['PST'] == $code) ? "selected" : "";
         $strOfPST.="<option $selected value='".$code."'>".$punkts['Name']." (".$punkts['Address'].") [".$code."]"."</option>";
     }
 }
@@ -398,7 +401,10 @@ CJSCore::Init(array("jquery"));
                     error : function(a,b,c){console.log('export '+b,c);}
                 };
                 if(typeof(params.data) !== 'undefined')
+                {
+                    params.data['isdek_token'] = '<?=sdekHelper::getModuleToken()?>';
                     ajaxParams.data = params.data;
+                }
                 if(typeof(params.dataType) !== 'undefined')
                     ajaxParams.dataType = params.dataType;
                 if(typeof(params.success) !== 'undefined')
@@ -683,9 +689,9 @@ CJSCore::Init(array("jquery"));
                 var isCourierCall = (IPOLSDEK_oExport.isToDoor($('#IPOLSDEK_service').val()) && IPOLSDEK_oExport.courier.request);
                 var isSender = $('#IPOLSDEK_sender_phone').val();
 
-                if($('#IPOLSDEK_isBeznal').attr('checked'))
+                if($('#IPOLSDEK_isBeznal').prop('checked'))
                     dO['isBeznal']='Y';
-                if($('#IPOLSDEK_minVats').attr('checked'))
+                if($('#IPOLSDEK_minVats').prop('checked'))
                     dO['minVats']='Y';
 
                 var reqFields = {
@@ -744,7 +750,7 @@ CJSCore::Init(array("jquery"));
 
                 dO['AS'] = {};
                 $('[id^="IPOLSDEK_AS_"]').each(function(){
-                    if($(this).attr('checked'))
+                    if($(this).prop('checked'))
                         dO['AS'][$(this).val()]='Y';
                 });
 
@@ -890,7 +896,7 @@ CJSCore::Init(array("jquery"));
             },
                 // checking payed / beznal
             checkPay: function(){
-                if($('#IPOLSDEK_isBeznal').attr('checked')){
+                if($('#IPOLSDEK_isBeznal').prop('checked')){
                     <?if($badPay){?>$('#IPOLSDEK_notPayed').css('display','inline');<?}?>
                     $('#IPOLSDEK_toPay').attr('disabled','disabled');
                     $('#IPOLSDEK_deliveryP').attr('disabled','disabled');
@@ -1681,7 +1687,7 @@ CJSCore::Init(array("jquery"));
                 </tr>
                 <tr id='IPOLSDEK_badDeliveryTerm'><td colspan='2'><small><?=GetMessage('IPOLSDEK_JS_SOD_badDeliveryDate')?><span id='IPOLSDEK_deliveryTerm'></span>&nbsp;<?=GetMessage('IPOLSDEK_JS_SOD_HD_DAY')?></small></td></tr>
             <?}?>
-            <tr><td><?=GetMessage('IPOLSDEK_JS_SOD_name')?></td><td><input id='IPOLSDEK_name' type='text' value="<?=$ordrVals['name']?>"><?=$message['name']?></td></tr>
+            <tr><td><?=GetMessage('IPOLSDEK_JS_SOD_name')?></td><td><input id='IPOLSDEK_name' type='text' value="<?=str_replace(array('"','<','>','\''), ' ', $ordrVals['name'])?>"><?=$message['name']?></td></tr>
             <tr><td valign="top"><?=GetMessage('IPOLSDEK_JS_SOD_phone')?></td><td><input id='IPOLSDEK_phone' type='text' value="<?=$ordrVals['phone']?>"></td></tr>
             <?if(array_key_exists('oldPhone',$ordrVals) && str_replace(' ','',$ordrVals['oldPhone']) != $ordrVals['phone']){?>
                 <tr><td valign="top"><?=GetMessage('IPOLSDEK_JS_SOD_oldPhone')?></td><td><?=$ordrVals['oldPhone']?></td></tr>

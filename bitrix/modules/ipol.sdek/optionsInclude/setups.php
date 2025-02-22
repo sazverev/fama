@@ -6,7 +6,7 @@ $paySysS=CSalePaySystem::GetList(array(),array('ACTIVE'=>'Y'));
 $paySysHtml='<select name="paySystems[]" multiple size="5">';
 while($paySys=$paySysS->Fetch()){
 	$paySysHtml.='<option value="'.$paySys['ID'].'" ';
-	if(!$PayDefault) {
+	if(!is_array($PayDefault) && !$PayDefault) {
 		$name = strtolower($paySys['NAME']);
 		if( strpos($name, GetMessage('IPOLSDEK_cashe')) === false && 
 			strpos($name, GetMessage('IPOLSDEK_cashe2')) === false && 
@@ -837,6 +837,12 @@ foreach(sdekExport::getAllProfiles() as $profile)
 		?>
 		<input type='button' value='<?=GetMessage('IPOLSDEK_OTHR_getOutLst_BUTTON')?>' id='IPOLSDEK_SO' onclick='IPOLSDEK_setups.base.syncOrdrs()'/>
 	</td>
+</tr>
+<tr style='display:none' class='IPOLSDEK_service'>
+    <td><?=GetMessage('IPOLSDEK_OPT_useOldApi')?></td>
+    <td>
+        <input type='checkbox' value='Y' name='useOldApi' <?=(\Ipolh\SDEK\option::get('useOldApi') === 'Y') ? 'checked' : ''?>/>
+    </td>
 </tr>
 <tr style='display:none' class='IPOLSDEK_service'>
 	<td><?=GetMessage('IPOLSDEK_OPT_dostTimeout')?></td>

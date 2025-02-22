@@ -14,10 +14,10 @@ class sdekExport extends sdekHelper{
 
 	static $orderDescr  = false;
 	static $requestVals = false;
-	static $isLoaded    = false; // выставлЯютсЯ в orderDetail
+	static $isLoaded    = false; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ orderDetail
 	static $isEditable  = false;
 
-	static $locStreet   = false; // улица беретсЯ из местоположениЯ
+	static $locStreet   = false; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	static $subRequests = false;
 
@@ -94,10 +94,10 @@ class sdekExport extends sdekHelper{
 			self::showExisted();
 	}
 
-	//получаем город заказа по его id
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ id
 	static $optCity = false;
 	static $arTmpArLocation=false;
-	public static function getOrderCity($id){ // используется только в orderDetail.php
+	public static function getOrderCity($id){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ orderDetail.php
 		if(!self::$optCity)
 			self::$optCity = \Ipolh\SDEK\option::get('location');
 		if(!is_array(self::$arTmpArLocation)) self::$arTmpArLocation=array();
@@ -139,7 +139,7 @@ class sdekExport extends sdekHelper{
 		return false;
 	}
 
-	// получение информации о заказе
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	public static function getOrderDescr($oId=false,$mode=false){
 		$arOrderDescr = array('info'=>array(),'properties'=>array());
 		if(!$oId)
@@ -150,7 +150,7 @@ class sdekExport extends sdekHelper{
 			$mode = (self::$workMode) ? self::$workMode : 'order';
 
 		if(self::isConverted()){
-			// информация о заказе
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			$orderInfo = Bitrix\Sale\Order::load($oId);
 			$arUChecks = array("COMMENTS","PAY_SYSTEM_ID","PAYED","PRICE","SUM_PAID","PRICE_DELIVERY","USER_DESCRIPTION","PERSON_TYPE_ID");
 			if($mode == 'order'){
@@ -177,7 +177,7 @@ class sdekExport extends sdekHelper{
 
 			foreach($arUChecks as $code)
 				$arOrderDescr['info'][$code] = $orderInfo->getField($code);
-			// свойства
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			$arProps = $orderInfo->getPropertyCollection()->getArray();
 			foreach($arProps['properties'] as $arProp){
 				$val = array_pop($arProp['VALUE']);
@@ -185,14 +185,14 @@ class sdekExport extends sdekHelper{
 					$arOrderDescr['properties'][$arProp['CODE']] = $val;
 			}
 		}else{
-			// информация о заказе
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			$order = CSaleOrder::getById($oId);
 			$arOrderDescr['info']['DELIVERY_SDEK'] = (strpos($order['DELIVERY_ID'],'sdek:') === 0);
             $arOrderDescr['info']['DELIVERY_ID']   = $order['DELIVERY_ID'];
 			$arUChecks = array("COMMENTS","PAY_SYSTEM_ID","PAYED","ACCOUNT_NUMBER","PRICE","SUM_PAID","PRICE_DELIVERY","USER_DESCRIPTION","PERSON_TYPE_ID");
 			foreach($arUChecks as $code)
 				$arOrderDescr['info'][$code] = $order[$code];
-			// свойства
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			$orderProps=CSaleOrderPropsValue::GetOrderProps($oId);
 			while($orderProp=$orderProps->Fetch())
 				$arOrderDescr['properties'][$orderProp['CODE']] = $orderProp['VALUE'];
@@ -201,13 +201,13 @@ class sdekExport extends sdekHelper{
 		return $arOrderDescr;
 	}
 
-	static function formation(){ // рассчитывает массив свойств длЯ заказа
+	static function formation(){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		$arFormation = array();
 
-		// получаем доставку
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         $arDeliveryConfig = (self::$orderDescr['info']['DELIVERY_SDEK']) ? self::getDeliveryConfig(self::$orderDescr['info']['DELIVERY_ID']) : self::getDeliveryConfig();
 
-		// безнал
+		// пїЅпїЅпїЅпїЅпїЅпїЅ
 		$paySys = \Ipolh\SDEK\option::get('paySystems');
 		if(
 			in_array(self::$orderDescr['info']['PAY_SYSTEM_ID'],$paySys) ||
@@ -215,14 +215,14 @@ class sdekExport extends sdekHelper{
 		)
 			$arFormation['isBeznal'] = 'Y';
 
-		// тариф
+		// пїЅпїЅпїЅпїЅпїЅ
 		if(self::$orderDescr['properties']['IPOLSDEK_CNTDTARIF'])
 			$arFormation['service'] = self::$orderDescr['properties']['IPOLSDEK_CNTDTARIF'];
 
-		// реальный отправитель
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		$arFormation['realSeller'] = ($rs = \Ipolh\SDEK\option::get('realSeller')) ? $rs : '';
 
-		// город-отправитель
+		// пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if($arDeliveryConfig){
             $arFormation['departure'] = CDeliverySDEK::getDeliverySender($arDeliveryConfig);
         } else {
@@ -231,12 +231,12 @@ class sdekExport extends sdekHelper{
                 $arFormation['departure'] = $sender['SDEK_ID'];
         }
 
-        // данные отправителя
+        // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         foreach(array('company','name','street','house','flat','phone') as $senData){
             $arFormation['sender_'.$senData] = \Ipolh\SDEK\option::get('sender_'.$senData);
         }
 
-		// свойства
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		$arProps = array();
 		if(IsModuleInstalled('ipol.kladr')){
 			$propCode = \Ipolh\SDEK\option::get('address');
@@ -313,13 +313,13 @@ class sdekExport extends sdekHelper{
 			}
 		}
 
-		// комментарий
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		switch(\Ipolh\SDEK\option::get('comment')){
 			case 'B' : if(self::$orderDescr['info']['USER_DESCRIPTION']) $arFormation['comment'] = self::$orderDescr['info']['USER_DESCRIPTION']; break;
 			case 'M' : if(self::$orderDescr['info']['COMMENTS'])         $arFormation['comment'] = self::$orderDescr['info']['COMMENTS'];         break;
 		}
 		
-		// к оплате за доставку
+		// пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		$arFormation['deliveryP'] = self::$orderDescr['info']['PRICE_DELIVERY'];
 
 		foreach($arProps as $prop => $value)
@@ -330,7 +330,7 @@ class sdekExport extends sdekHelper{
 		$PVZprop = (array_key_exists($PVZprop,self::$orderDescr['properties'])) ? self::$orderDescr['properties'][$PVZprop] : false;
 		$arFormation['PVZ'] = ($PVZprop && strpos($PVZprop,"#S")) ? substr($PVZprop,strpos($PVZprop,"#S")+2):false;
 
-		// габариты
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		if(self::$workMode == 'order')
 			CDeliverySDEK::setOrderGoods(self::$orderId);
 		else
@@ -351,7 +351,7 @@ class sdekExport extends sdekHelper{
 		$arFormation['NDSGoods']    = \Ipolh\SDEK\option::get('NDSGoods');
 		$arFormation['NDSDelivery'] = \Ipolh\SDEK\option::get('NDSDelivery');
 		
-		// „ата доставки
+		// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		$arFormation['deliveryDate'] = false;
 
 		foreach(GetModuleEvents(self::$MODULE_ID, "onFormation", true) as $arEvent)
@@ -381,7 +381,7 @@ class sdekExport extends sdekHelper{
 			foreach($adrStr as $key => $addr){
 				$addr = trim($addr);
 				if(!$addr) unset($adrStr[$key]);
-				if($key == 0 && is_numeric($addr)) unset($adrStr[$key]); // индекс
+				if($key == 0 && is_numeric($addr)) unset($adrStr[$key]); // пїЅпїЅпїЅпїЅпїЅпїЅ
 
 				foreach($arDictionary as $key => $descr)
 					if(!$arAdress[$key])
@@ -391,7 +391,7 @@ class sdekExport extends sdekHelper{
 								unset($adrStr[$key]);
 							}
 
-				if(!$arAdress['HOUSE']){//дом
+				if(!$arAdress['HOUSE']){//пїЅпїЅпїЅ
 					if(self::strps($addr,GetMessage('IPOLSDEK_ADRSUFFER_HOUSE2'))!==false&&self::strps($addr,GetMessage('IPOLSDEK_ADRSUFFER_HOUSE2'))<2)
 						{$arAdress['HOUSE']=self::ctAdr($addr,2);unset($adrStr[$key]);}
 					if(self::strps($addr,GetMessage('IPOLSDEK_ADRSUFFER_HOUSE3'))===0&&self::strps($addr,GetMessage('IPOLSDEK_ADRSUFFER_HOUSE3'))<2)
@@ -429,11 +429,11 @@ class sdekExport extends sdekHelper{
 		}
 	}
 
-	// длЯ парсинга адреса
+	// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	static function ctAdr($wt,$n){return trim(substr(trim($wt),$n));}
 	static function strps($wr,$wat){return strpos(strtolower($wr),strtolower($wat));}
 
-	static function loadGoodsPack($packs){ // рассовывает упаковки по товарам
+	static function loadGoodsPack($packs){ // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		CDeliverySDEK::$goods = array();
 		foreach($packs as $pack){
 			$arGabs = explode(' x ',$pack['gabs']);
@@ -447,7 +447,7 @@ class sdekExport extends sdekHelper{
 		}
 	}
 
-	// расчет габаритов товаров по указанным параметрам
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	static function countGoods($params){
 		$arGCatalog = array();
 		if(!cmodule::includeModule('catalog')) return;
@@ -502,7 +502,7 @@ class sdekExport extends sdekHelper{
 			return $rezTarifs;
 	}
 
-	// перерасчет доставки
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public static function extCountDeliv($arParams){
 		if(!$arParams['orderId'] || !$arParams['cityTo'] || !$arParams['tarif'])
 			return false;
@@ -591,7 +591,7 @@ class sdekExport extends sdekHelper{
 		return (CDeliverySDEK::$lastCnt != floatval(str_replace(" ","",$got)));
 	}
 
-	// установка габаритов для расчета доставки
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	private static function setCalcData($arParams){
 		if(!array_key_exists('packs',$arParams) || !$arParams['packs']){
 			if(!array_key_exists('GABS',$arParams)){
@@ -608,7 +608,7 @@ class sdekExport extends sdekHelper{
 		CDeliverySDEK::$preSet = $arParams['tarif'];
 	}
 
-	// связка заказов / отгрузок
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public static function noSendings(){
 		self::$subRequests = array();
 		if(!self::isConverted() || self::$requestVals || !self::canShipment())
@@ -638,7 +638,7 @@ class sdekExport extends sdekHelper{
 		return !(bool)count(self::$subRequests);
 	}
 
-	// Ћтображение окна отправленной заЯвки иного режима
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	public static function showExisted(){
 		CJSCore::Init(array("jquery"));
 		$unsended = false;
@@ -673,7 +673,7 @@ class sdekExport extends sdekHelper{
 						$('.adm-detail-toolbar').find('.adm-detail-toolbar-right').prepend("<a href='javascript:void(0)' onclick='IPOLSDEK_existedInfo.showWindow()' class='adm-btn' id='IPOLSDEK_btn'><?=GetMessage('IPOLSDEK_JSC_SOD_BTNAME')?></a>");
 					}
 				},
-				// окно
+				// пїЅпїЅпїЅпїЅ
 				wnd: false,
 				showWindow: function(){
 					if(!IPOLSDEK_existedInfo.wnd){
@@ -700,6 +700,7 @@ class sdekExport extends sdekHelper{
 						type : 'POST',
 						data : {
 							isdek_action : 'printOrderInvoice',
+                            isdek_token  : '<?=sdekHelper::getModuleToken()?>',
 							oId  : oId,
 							mode : '<?=(self::$workMode == 'shipment') ? 'order' : 'shipment'?>'
 						},
@@ -724,6 +725,7 @@ class sdekExport extends sdekHelper{
 						type : 'POST',
 						data : {
 							isdek_action : 'printOrderShtrih',
+                            isdek_token  : '<?=sdekHelper::getModuleToken()?>',
 							oId  : oId,
 							mode : '<?=(self::$workMode == 'shipment') ? 'order' : 'shipment'?>'
 						},
@@ -751,7 +753,7 @@ class sdekExport extends sdekHelper{
 						if(confirm("<?=GetMessage('IPOLSDEK_JSC_SOD_IFDELETE')?>"))
 							$.post(
 								"/bitrix/js/<?=self::$MODULE_ID?>/ajax.php",
-								{isdek_action:'delReqOD',oid:oId,mode:'<?=(self::$workMode == 'order') ? 'shipment' : 'order'?>'},
+								{isdek_action:'delReqOD',isdek_token:'<?=sdekHelper::getModuleToken()?>',oid:oId,mode:'<?=(self::$workMode == 'order') ? 'shipment' : 'order'?>'},
 								function(data){
 									IPOLSDEK_existedInfo.onDelete(data);
 								}
@@ -761,7 +763,7 @@ class sdekExport extends sdekHelper{
 							if(confirm("<?=GetMessage('IPOLSDEK_JSC_SOD_IFKILL')?>"))
 								$.post(
 									"/bitrix/js/<?=self::$MODULE_ID?>/ajax.php",
-									{isdek_action:'killReqOD',oid:oId,mode:'<?=(self::$workMode == 'order') ? 'shipment' : 'order'?>'},
+									{isdek_action:'killReqOD',isdek_token:'<?=sdekHelper::getModuleToken()?>',oid:oId,mode:'<?=(self::$workMode == 'order') ? 'shipment' : 'order'?>'},
 									function(data){
 										if(data.indexOf('GD:')===0)
 											IPOLSDEK_existedInfo.onDelete(data.substr(3));
@@ -850,7 +852,7 @@ class sdekExport extends sdekHelper{
 				$date = false;
 			$itog = CCurrencyRates::ConvertCurrency($params['SUM'],$from,$into,$date);
 			if($params['FORMAT'])
-				$itog = CCurrencyLang::CurrencyFormat($itog,$params['TO'],true);
+				$itog = CCurrencyLang::CurrencyFormat($itog,$into,true);
 			if(array_key_exists('isdek_action',$params) && $params['isdek_action'] == __function__)
 				echo json_encode(self::zajsonit(array('VALUE' => $itog, 'WHERE' => $params['WHERE'])));
 			else
@@ -858,7 +860,7 @@ class sdekExport extends sdekHelper{
 		} 
 	}
 
-	// Получение списка аккаунтов
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     public static function getActiveAccounts($params){
 	    $arReturn = array('success' => 'Y');
 
@@ -904,10 +906,10 @@ class sdekExport extends sdekHelper{
         }
     }
 	
-	// ‘ортировка Џ‚‡ по алфавиту
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public static function sortPVZ($pvz1,$pvz2){
-		$pvz1['Name'] = str_replace(array('"',"'",'З'),"",$pvz1['Name']);
-		$pvz2['Name'] = str_replace(array('"',"'",'З'),"",$pvz2['Name']);
+		$pvz1['Name'] = str_replace(array('"',"'",'пїЅ'),"",$pvz1['Name']);
+		$pvz2['Name'] = str_replace(array('"',"'",'пїЅ'),"",$pvz2['Name']);
 		return ($pvz1['Name'] < $pvz2['Name']) ? -1 : 1;
 	}
 

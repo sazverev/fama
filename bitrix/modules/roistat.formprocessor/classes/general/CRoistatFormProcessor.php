@@ -479,7 +479,7 @@ class CRoistatFormProcessor
         $result[$item['ID']] = array(
             'ID'      => $item['ID'],
             'NAME'    => $item[$nameKey],
-            'ACTION'  => in_array($item['ID'], $chooseArr) ? 'Y' : 'N',
+            'ACTION'  => (is_array($chooseArr) && in_array($item['ID'], $chooseArr)) ? 'Y' : 'N',
         );
 
         return $result;

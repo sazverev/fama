@@ -36,7 +36,7 @@ class option extends abstractGeneral
         return \COption::SetOptionString(self::$MODULE_ID,$option,$val);
     }
 
-    public function getDefault($option)
+    public static function getDefault($option)
     {
         $opt = self::collection();
         if(array_key_exists($option,$opt))

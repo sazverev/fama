@@ -11,23 +11,63 @@ class subscribeHandler /*extends abstractGeneral*/
 
     public static $link = true;
 
-    public static function getAjaxAction($action,$subaction){
-        if(method_exists('sdekHelper',$action))
-            \sdekHelper::$action($_POST);
-        elseif(method_exists('sdekdriver',$action))
-            \sdekdriver::$action($_POST);
-        elseif(method_exists('CDeliverySDEK',$action))
-            \CDeliverySDEK::$action($_POST);
-        elseif(method_exists('sdekExport',$action))
-            \sdekExport::$action($_POST);
-        elseif(method_exists('sdekOption',$action))
-            \sdekOption::$action($_POST);
-        else{
-            if(method_exists('sdekHelper',$subaction))
-                \sdekHelper::$subaction($_POST);
-            elseif(method_exists('CDeliverySDEK',$subaction))
-                \CDeliverySDEK::$subaction($_POST);
+    public static function getAjaxAction($action){
+        $map = self::getMap();
+
+        if(array_key_exists($action,$map) && (!$map[$action] || \sdekHelper::isAdmin('R'))) {
+            if (method_exists('sdekHelper', $action))
+                \sdekHelper::$action($_POST);
+            elseif (method_exists('sdekdriver', $action))
+                \sdekdriver::$action($_POST);
+            elseif (method_exists('CDeliverySDEK', $action))
+                \CDeliverySDEK::$action($_POST);
+            elseif (method_exists('sdekExport', $action))
+                \sdekExport::$action($_POST);
+            elseif (method_exists('sdekOption', $action))
+                \sdekOption::$action($_POST);
         }
+    }
+
+    protected static function getMap()
+    {
+        return array(
+            'countGoods' => false,
+            'countDelivery' => false,
+            'extCountDeliv' => false,
+            'htmlTaritfList' => false,
+            'getAllTarifsToCount' => false,
+            'formatCurrency' => false,
+            'getCountryHeaderCities' => false,
+            'getCountryDetailCities' => false,
+            'callUpdateList' => false,
+            'clearCache' => false,
+            'callOrderStates' => false,
+
+            'restorePVZ' => true,
+            'saveAndSend' => true,
+            'delReqOD' => true,
+            'killReqOD' => true,
+            'printOrderInvoice' => true,
+            'printOrderShtrih' => true,
+            'getActiveAccounts' => true,
+            'tableHandler' => true,
+            'getOrderState' => true,
+            'getAccountSelect' => true,
+            'goSlaughterCities' => true,
+            'handleImport' => true,
+            'setImport' => true,
+            'setAutoloads' => true,
+            'autoLoadsHandler' => true,
+            'auth' => true,
+            'ressurect' => true,
+            'callAccounts' => true,
+            'newAccount' => true,
+            'optionDeleteAccount' => true,
+            'optionMakeAccDefault' => true,
+            'killSchet' => true,
+            'killUpdt' => true,
+            'logoff' => true
+        );
     }
 
     // RegisterModuleDependences

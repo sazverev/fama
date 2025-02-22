@@ -380,6 +380,7 @@ sort($arResult['Regions']);
             }
 
             data['isdek_action']  = 'countDelivery';
+            data['isdek_token'] = '<?=sdekHelper::getWidgetToken()?>';
 
             $.ajax({
                 url: '/bitrix/js/ipol.sdek/ajax.php',
@@ -391,7 +392,7 @@ sort($arResult['Regions']);
         },
 
         onLoadPrices: function(data){
-console.log('onLoadPrices',data);
+//console.log('onLoadPrices',data);
             if(IPOLSDEK_pvz.logging){
                 console.log(IPOLSDEK_pvz.label + ': response prices',data);
             }

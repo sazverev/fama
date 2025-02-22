@@ -33,6 +33,7 @@
 			"/bitrix/js/<?=$module_id?>/ajax.php",
 			{
 				'isdek_action' : 'auth',
+                'isdek_token'  : '<?=sdekHelper::getModuleToken()?>',
 				'login'        : login,
 				'password'     : password,
 			},

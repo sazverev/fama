@@ -22,7 +22,7 @@ class sdekdriver extends sdekHelper{
 	}
 
 	// сборка упаковки в заказ
-	protected static function getPacks($oId,$mode,$orderParams)
+	public static function getPacks($oId,$mode,$orderParams)
     {
         $arPacks = array();
         $minEnsure
@@ -249,7 +249,7 @@ class sdekdriver extends sdekHelper{
 
 			// валюта
 			$cntrCurrency = false;
-			if($country != 'rus' && !$bezNal){
+			if($country != 'rus'){
 				$cntrCurrency = array();
 				$svdCountries = self::getCountryOptions();
 				if(array_key_exists($country,$svdCountries) && $svdCountries[$country]['cur'] && $svdCountries[$country]['cur'] != $defVal)
@@ -266,7 +266,15 @@ class sdekdriver extends sdekHelper{
 				if(array_key_exists('deliveryP',$orderParams))
 					$orderParams['deliveryP'] = floatval(sdekExport::formatCurrency(array('TO'=>$cntrCurrency['site'],'SUM'=>$orderParams['deliveryP'],'orderId'=>$oId)));
 				$orderParams['toPay'] = floatval(sdekExport::formatCurrency(array('TO'=>$cntrCurrency['site'],'SUM'=>$orderParams['toPay'],'orderId'=>$oId)));
-			}elseif(
+
+                if (!$bezNal)
+                {
+                    if(array_key_exists('deliveryP',$orderParams))
+                        $orderParams['deliveryP'] = floatval(sdekExport::formatCurrency(array('TO'=>$cntrCurrency['site'],'SUM'=>$orderParams['deliveryP'],'orderId'=>$oId)));
+
+                    $orderParams['toPay'] = floatval(sdekExport::formatCurrency(array('TO'=>$cntrCurrency['site'],'SUM'=>$orderParams['toPay'],'orderId'=>$oId)));
+                }
+            }elseif(
 				$country == 'rus' && 
 				$orderParams['NDSDelivery'] &&
 				array_key_exists('deliveryP',$orderParams)
@@ -495,7 +503,7 @@ class sdekdriver extends sdekHelper{
 		return $strXML;
 	}
 	
-	protected static function ndsVal($val,$nds)
+	public static function ndsVal($val,$nds)
 	{
 		switch($nds){
 			case 'VAT10' : $val = $val * 10 / 110; break;
@@ -516,78 +524,106 @@ class sdekdriver extends sdekHelper{
 		}
 		if(!$oId) return false;
 		if(!cmodule::includemodule('sale')){self::errorLog(GetMessage("IPOLSDEK_ERRLOG_NOSALEOML"));return false;}//без модуля sale делать нечего
-		$mesId=self::getMessId();
-		$orderXML = self::genOrderXML($oId,$mesId,$mode);
 
-		if(!$orderXML) return false;
-		$sended = '';
-		$result = self::sendToSDEK($orderXML,'new_orders');
-		
-		\Ipolh\SDEK\Bitrix\Admin\Logger::orderSend(array('Request' => $orderXML, 'Response'=> $result['result']));
+        $options = new \Ipolh\SDEK\Bitrix\Entity\Options();
+		$adapter = new \Ipolh\SDEK\Bitrix\Adapter\Order($options);
+		$adapter->uploadedOrder($oId,$mode,!\Ipolh\SDEK\abstractGeneral::isNewApp());
+		$auth    = \sqlSdekLogs::getByAcc($adapter->getBaseOrder()->getField('account'));
+        $application = \Ipolh\SDEK\abstractGeneral::makeApplication($auth['ACCOUNT'],$auth['SECURE']);
+        $controller  = new \Ipolh\SDEK\Bitrix\Controller\Order($application,$adapter->getBaseOrder());
+        $obReturn    = $controller->sendOrder();
 
-		$return = false;
-		if($result['code'] == 200){
-			$xml=simplexml_load_string($result['result']);
-			if($xml['ErrorCode'])
-				self::toAnswer(self::zaDEjsonit($xml['Msg']),GetMessage("IPOLSDEK_SEND_UNBLSND").GetMessage("IPOLSDEK_ERRORLOG_ERRORCODE"));
-			elseif($xml->DeliveryRequest['ErrorCode'])
-				self::toAnswer(self::zaDEjsonit($xml->DeliveryRequest['Msg']),GetMessage("IPOLSDEK_SEND_UNBLSND").GetMessage("IPOLSDEK_ERRORLOG_ERRORCODE"));
-			else{
-				$arErrors = array();
-				foreach($xml->Order as $orderMess){
-					if($orderMess['ErrorCode'])
-						$arErrors[(string)$orderMess['ErrorCode']] = (string)$orderMess['Msg'];
-					elseif($orderMess['DispatchNumber']){
-						$sended = (string)$orderMess['DispatchNumber'];
-						if(\Ipolh\SDEK\option::get('setDeliveryId') == 'Y'){
-							if($mode == 'order')
-								CSaleOrder::Update($oId,array('TRACKING_NUMBER'=>$sended));
-							elseif(self::isConverted()) // <3 D7
-								self::setShipmentField($oId,'TRACKING_NUMBER',$sended);
-						}
-					}
-				}
+        $arErrors = array();
+        $errors = $application->getErrorCollection();
+        $errors->reset();
+        while($error = $errors->getNext()){
+            $arErrors []=$error->getMessage();
+        }
 
-				$saveProp = \Ipolh\SDEK\option::get('setTrackingOrderProp');
-				if($saveProp){
-				    $arOrder = CSaleOrder::GetByID($oId);
-                    $op = CSaleOrderProps::GetList(array(),array("PERSON_TYPE_ID" =>$arOrder['PERSON_TYPE_ID'],"CODE"=>$saveProp))->Fetch();
-                    if($op) {
-                        self::saveProp(array(
-                            "ORDER_ID" => $oId,
-                            "ORDER_PROPS_ID" => $op['ID'],
-                            "NAME"  => $op['NAME'],
-                            "CODE"  => $saveProp,
-                            "VALUE" => \Ipolh\SDEK\SDEK\Tools::getTrackLink($sended)
-                        ));
+        $return = false;
+        if($obReturn->isSuccess()){
+            $response = $obReturn->getResponse();
+
+            $sended = false;
+            if($response->getEntity()){
+                if($response->getEntity()->getUuid()){
+                    $sended = $response->getEntity()->getUuid();
+                }
+            }
+
+            if($response->getRequests()){
+                $response->getRequests()->reset();
+                while($obRequest = $response->getRequests()->getNext()){
+                    if($obRequest->getState() == 'INVALID'){
+                        $obRequest->getErrors()->reset();
+                        while($error = $obRequest->getErrors()->getNext()){
+                            $arErrors[$error->getCode()]= $error->getMessage();
+                        }
+                        $sended = false;
                     }
                 }
+            }
 
-				$hasErrors = (count($arErrors));
-				$status = ($hasErrors) ? 'ERROR' : 'OK';
-				sqlSdekOrders::updateStatus(array(
-					"ORDER_ID" => $oId,
-					"STATUS"   => $status,
-					"SDEK_ID"  => $sended,
-					"MESSAGE"  => ($hasErrors) ? serialize(self::zaDEjsonit($arErrors)): false,
-					"MESS_ID"  => $mesId,
-					"mode"     => $mode,
-					"ACCOUNT"  => self::$accountId
-				));
-				if($status == 'ERROR')
-					self::toAnswer(GetMessage("IPOLSDEK_SEND_NOTDENDED"));
-				elseif($hasErrors)
-					self::toAnswer(GetMessage("IPOLSDEK_SEND_BADSENDED"));
-				else{
-					self::toAnswer(GetMessage("IPOLSDEK_SEND_SENDED"));
-					$return = true;
-				}
-				foreach(GetModuleEvents(self::$MODULE_ID, "requestSended", true) as $arEvent)
-					ExecuteModuleEventEx($arEvent,Array($oId,$status,$sended));
-			}
-		}
-		else
-			self::toAnswer(GetMessage("IPOLSDEK_SEND_UNBLSND").GetMessage("IPOLSDEK_ERRORLOG_BADRESPOND").$result['code']);
+            if($sended) {
+                if (\Ipolh\SDEK\option::get('setDeliveryId') == 'Y') {
+                    if ($mode == 'order') {
+                        CSaleOrder::Update($oId, array('TRACKING_NUMBER' => $sended));
+                    } elseif (self::isConverted()) {// <3 D7
+                        self::setShipmentField($oId, 'TRACKING_NUMBER', $sended);
+                    }
+
+                    $saveProp = \Ipolh\SDEK\option::get('setTrackingOrderProp');
+                    if ($saveProp) {
+                        $arOrder = CSaleOrder::GetByID($oId);
+                        $op
+                                 = CSaleOrderProps::GetList(array(), array(
+                            "PERSON_TYPE_ID" => $arOrder['PERSON_TYPE_ID'],
+                            "CODE" => $saveProp
+                        ))->Fetch();
+                        if ($op) {
+                            self::saveProp(array(
+                                "ORDER_ID" => $oId,
+                                "ORDER_PROPS_ID" => $op['ID'],
+                                "NAME" => $op['NAME'],
+                                "CODE" => $saveProp,
+                                "VALUE" => \Ipolh\SDEK\SDEK\Tools::getTrackLink($sended)
+                            ));
+                        }
+                    }
+                }
+            }
+
+            $hasErrors = (count($arErrors));
+            $status    = ($hasErrors) ? 'ERROR' : 'OK';
+            sqlSdekOrders::updateStatus(array(
+                "ORDER_ID" => $oId,
+                "STATUS" => $status,
+                "SDEK_ID" => $sended,
+                "MESSAGE" => ($hasErrors) ? serialize(self::zaDEjsonit($arErrors)) : false,
+                "MESS_ID" => $adapter->getBaseOrder()->getField('messId'),
+                "mode" => $mode,
+                "ACCOUNT" => $auth['ID']
+            ));
+            if ($status == 'ERROR')
+                self::toAnswer(GetMessage("IPOLSDEK_SEND_NOTDENDED"));
+            elseif ($hasErrors)
+                self::toAnswer(GetMessage("IPOLSDEK_SEND_BADSENDED"));
+            else {
+                self::toAnswer(GetMessage("IPOLSDEK_SEND_SENDED"));
+                $return = true;
+            }
+            foreach (GetModuleEvents(self::$MODULE_ID, "requestSended", true) as $arEvent)
+                ExecuteModuleEventEx($arEvent, Array(
+                    $oId,
+                    $status,
+                    $sended
+                ));
+        } else {
+            foreach ($arErrors as $error){
+                self::toAnswer($error);
+            }
+        }
+
 		return $return;
 	}
 
@@ -607,6 +643,7 @@ class sdekdriver extends sdekHelper{
 			self::errorLog(GetMessage('IPOLSDEK_SEND_ERR_NOACCESS'));
 			return false;
 		}
+
 		$params=self::zaDEjsonit($params);
 
 		if($params['account']){
@@ -624,7 +661,7 @@ class sdekdriver extends sdekHelper{
         } else {
             $account = false;
         }
-		
+
 		$arNeedFields = array('service','location','name','phone');
 		if(in_array("PVZ",$params))
 			$arNeedFields[]="PVZ";
@@ -791,7 +828,7 @@ class sdekdriver extends sdekHelper{
 	}
 
 	static function getExtraOptions(){ // доп. настройки для заказов
-		$arAddService = array(3,7,16,17,24,30,36,37,48);
+		$arAddService = array(3,7,16,17,30,36,48);
 		$src = \Ipolh\SDEK\option::get('addingService');
 
 		$arReturn = array();

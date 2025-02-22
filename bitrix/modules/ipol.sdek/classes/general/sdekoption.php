@@ -9,110 +9,23 @@
 		()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()*/
 
 		static function auth($params){
-			if(!$params['login'] || !$params['password'])
-				die('No auth data');
-			if(!class_exists('CDeliverySDEK'))
-				die('No main class founded');
-			sdekdriver::$MODULE_ID;
-			if(!function_exists('curl_init'))
-				die(GetMessage("IPOLSDEK_AUTH_NOCURL"));
-
-			$resAuth = self::checkAuth($params['login'],$params['password']);
-			if($resAuth['success']){
-				sqlSdekLogs::Add(array('ACCOUNT' => $params['login'],'SECURE' => $params['password']));
-				$lastCheck = sqlSdekLogs::Check($params['login']);
-				\Ipolh\SDEK\option::set('logged',$lastCheck);
-				if($lastCheck){
-					$isPVZ = (\Ipolh\SDEK\option::get('noPVZnoOrder') == 'Y');
-					Ipolh\SDEK\subscribeHandler::register($isPVZ);
-
-					CAgent::AddAgent("sdekOption::agentUpdateList();", self::$MODULE_ID);//обновление листов
-					CAgent::AddAgent("sdekOption::agentOrderStates();",self::$MODULE_ID,"N",1800);//обновление статусов заказов
-
-					$path = COption::GetOptionString('sale','delivery_handles_custom_path','/bitrix/php_interface/include/sale_delivery/');
-				if(!file_exists($_SERVER["DOCUMENT_ROOT"].$path."delivery_sdek.php"))
-					CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".self::$MODULE_ID."/install/delivery/", $_SERVER["DOCUMENT_ROOT"].$path, true, true);
-
-					echo "G".GetMessage('IPOLSDEK_AUTH_YES');
-				}else
-					echo GetMessage('IPOLSDEK_AUTH_NO')." ".GetMessage('IPOLSDEK_AUTH_NO_BD');
-			}
-			else{
-				$retStr=GetMessage('IPOLSDEK_AUTH_NO');
-				foreach($resAuth as $erCode => $erText)
-					$retStr.=self::zaDEjsonit($erText." (".$erCode."). ");
-
-				echo $retStr;
-			}
+		    \Ipolh\SDEK\AuthHandler::auth($params);
 		}
 
 		static function logoff(){
-		    \Ipolh\SDEK\option::set('logged',false);
-			sqlSdekLogs::clear();
-			CAgent::RemoveModuleAgents(self::$MODULE_ID);
-			Ipolh\SDEK\subscribeHandler::unRegister();
-		}
-
-		static function authConsolidation(){
-			if(!\Ipolh\SDEK\option::get('logged'))
-				return;
-			sqlSdekLogs::Add(array('ACCOUNT'=>COption::GetOptionString(self::$MODULE_ID,'logSDEK',false),'SECURE'=>COption::GetOptionString(self::$MODULE_ID,'pasSDEK',false)));
-			$id = sqlSdekLogs::Check(COption::GetOptionString(self::$MODULE_ID,'logSDEK',false));
-            \Ipolh\SDEK\option::set('logged',$id);
+		    \Ipolh\SDEK\AuthHandler::delogin();
 		}
 
 		static function callAccounts(){
-			$acList = sqlSdekLogs::getAccountsList(true);
-			$default = \Ipolh\SDEK\option::get('logged');
-			foreach($acList as $id => $account){
-				$acList[$id] = array(
-					'account' => $account,
-					'default' => ($id == $default)
-				);
-			}
-			echo json_encode(self::zajsonit($acList));
+		    \Ipolh\SDEK\AuthHandler::callAccounts();
 		}
 
 		static function newAccount($params){
-			$resAuth = self::checkAuth($params['ACCOUNT'],$params['PASSWORD']);
-			if($resAuth['success']){
-				$arRequest = array('ACCOUNT' => $params['ACCOUNT'],'SECURE' => $params['PASSWORD'],'ACTIVE'=>'Y','LABEL'=>self::zaDEjsonit($params['LABEL']));
-				$arReturn = array('result' => 'ok');
-				$id = sqlSdekLogs::Check($params['ACCOUNT']);
-				if($id){
-					sqlSdekLogs::Update($id,$arRequest);
-					$arReturn['text'] = GetMessage('IPOLSDEK_AUTH_UPDATE');
-				}else
-					sqlSdekLogs::Add($arRequest);
-			}else{
-				$retStr = GetMessage('IPOLSDEK_AUTH_NO');
-				foreach($resAuth as $erCode => $erText)
-					$retStr.=self::zaDEjsonit($erText." (".$erCode."). ");
-				$arReturn = array(
-					'result' => 'error',
-					'text'	 => $retStr
-				);
-			}
-
-			echo json_encode(self::zajsonit($arReturn));
+			\Ipolh\SDEK\AuthHandler::newAccount($params);
 		}
 
 		static function checkAuth($account,$password){
-			CDeliverySDEK::$sdekCity   = 44;
-			CDeliverySDEK::$sdekSender = 44;
-			CDeliverySDEK::setOrder(array('GABS'=>array(
-			   "D_L" => 20,
-			   "D_W" => 30,
-			   "D_H" => 20,
-			   "W"   => min(\Ipolh\SDEK\option::get('weightD') / 1000,1)
-			)));
-
-			CDeliverySDEK::setAuth($account,$password);
-			$resAuth = CDeliverySDEK::calculateDost('pickup');
-			if(!$resAuth['success'])
-				$resAuth = CDeliverySDEK::calculateDost('courier');
-
-			return $resAuth;
+            return \Ipolh\SDEK\AuthHandler::checkAuth($account,$password);
 		}
 
 		static function optionDeleteAccount($params){
@@ -120,46 +33,30 @@
 		}
 
 		static function deleteAccount($id){
-			$arReturn = array('result' => 'error', 'text' => '');
-			if(!sqlSdekLogs::getById($id))
-				$arReturn['text'] = GetMessage('IPOLSDEK_AUTH_NO_EXIST');
-			else{
-				sqlSdekLogs::setActive($id,'N');
-				$curAccs = sqlSdekLogs::getAccountsList();
-				if(count($curAccs)){
-					if($id == \Ipolh\SDEK\option::get('logged')){
-						reset($curAccs);
-                        \Ipolh\SDEK\option::set('logged',key($curAccs));
-						$arReturn['result'] = 'collapse';
-					}else
-						$arReturn['result'] = 'ok';
-				}else{
-                    \Ipolh\SDEK\option::set('logged',false);
-					$arReturn['result'] = 'collapse';
-				}
-			}
-			return $arReturn;
-		}
-
-		static function optionMakeAccDefault($params){
-			echo json_encode(self::zajsonit(self::makeAccDefault($params['ID'])));
+			return \Ipolh\SDEK\AuthHandler::deleteAccount($id);
 		}
 
 		static function makeAccDefault($id=false){
-			$arReturn = array('result' => 'error', 'text' => '');
-			if(!sqlSdekLogs::getById($id))
-				$arReturn['text'] = GetMessage('IPOLSDEK_AUTH_NO_EXIST');
-			else{
-				$arReturn['result'] = 'collapse';
-                \Ipolh\SDEK\option::set('logged',$id);
-			}
-			return $arReturn;
+            return \Ipolh\SDEK\AuthHandler::makeAccDefault($id);
 		}
 
-		/*()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()
-														отображение таблицы о заявках
-			== tableHandler ==
-		()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()*/
+        static function authConsolidation(){
+            if(!\Ipolh\SDEK\option::get('logged'))
+                return;
+            sqlSdekLogs::Add(array('ACCOUNT'=>COption::GetOptionString(self::$MODULE_ID,'logSDEK',false),'SECURE'=>COption::GetOptionString(self::$MODULE_ID,'pasSDEK',false)));
+            $id = sqlSdekLogs::Check(COption::GetOptionString(self::$MODULE_ID,'logSDEK',false));
+            \Ipolh\SDEK\option::set('logged',$id);
+        }
+
+        static function optionMakeAccDefault($params){
+            echo json_encode(self::zajsonit(self::makeAccDefault($params['ID'])));
+        }
+
+
+        /*()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()
+                                                        отображение таблицы о заявках
+            == tableHandler ==
+        ()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()*/
 
 
 		static function tableHandler($params){
@@ -446,7 +343,7 @@
                 } else {
 					if(!file_exists($_SERVER['DOCUMENT_ROOT']."/upload/".self::$MODULE_ID))
 						mkdir($_SERVER['DOCUMENT_ROOT']."/upload/".self::$MODULE_ID);
-					$fileName = mktime()."_".$accId;
+                    $fileName = time()."_".$accId.'_'.md5($headers['account'].time()).md5($headers['secure'].time());
 					file_put_contents($_SERVER['DOCUMENT_ROOT']."/upload/".self::$MODULE_ID."/".$fileName.".pdf",$result['result']);
 
 					$arReturn['files'][] = $fileName.".pdf";
@@ -483,7 +380,7 @@
 			if(file_exists($dirPath)){
 				$dirContain = scandir($dirPath);
 				foreach($dirContain as $contain){
-					if(strpos($contain,'.pdf')!==false && (mktime() - (int)filemtime($dirPath.$contain)) > 1300)
+					if(strpos($contain,'.pdf')!==false && (mktime() - (int)filemtime($dirPath.$contain)) > 600)
 						unlink($dirPath.$contain);
 				}
 			}
@@ -861,7 +758,7 @@
 		static function callUpdateList($params){ // запрос на синхронизацию из опций
 			$arReturn = false;
 			if(array_key_exists('full',$params) && $params['full'] && !array_key_exists('listDone',$params))
-				if(!self::updateList())
+				if(!self::updateList(true))
 					$arReturn = array(
 						'result' => 'error',
 						'text'   => GetMessage('IPOLSDEK_UPDT_ERR'),
@@ -1180,9 +1077,14 @@
 			}
 		}
 
-		static function updateList(){ // обновление списка пунктов самовывоза
+        /**
+         * PVZ list update
+         * @param bool $forced
+         * @return mixed
+         */
+		static function updateList($forced = false) {
 			self::ordersNum();
-			$syncResult = \Ipolh\SDEK\Bitrix\Controller\pvzController::updateList();
+			$syncResult = \Ipolh\SDEK\PointsHandler::updatePoints(\Ipolh\SDEK\PointsHandler::REQUEST_TYPE_SDEK, $forced);
 
 			if(!$syncResult['SUCCESS'] && \Ipolh\SDEK\option::get('logged')){
                 $file=fopen($_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".self::$MODULE_ID."/hint.txt","a");
@@ -1362,7 +1264,7 @@
 
 		public static function restorePVZ()
         {
-            $result = \Ipolh\SDEK\Bitrix\Controller\pvzController::updateList('backup');
+            $result = \Ipolh\SDEK\PointsHandler::updatePoints(\Ipolh\SDEK\PointsHandler::REQUEST_TYPE_BACKUP, true);
             echo json_encode($result);
         }
 

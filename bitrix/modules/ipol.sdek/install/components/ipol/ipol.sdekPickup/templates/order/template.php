@@ -177,6 +177,7 @@ if(!$linkNamePOSTAMAT) $linkNamePOSTAMAT = GetMessage("IPOLSDEK_FRNT_CHOOSEPOSTA
             }
 
             request['isdek_action'] = 'countDelivery';
+            request['isdek_token']  = '<?=sdekHelper::getWidgetToken()?>';
 
             $.ajax({
                 url: '/bitrix/js/ipol.sdek/ajax.php',

@@ -11,11 +11,81 @@ IncludeModuleLangFile(__FILE__);
 */
 
 class sdekHelper{
-    static $MODULE_ID  = "ipol.sdek";
-    static $MODULE_LBL = "IPOLSDEK_";
+    static $MODULE_ID    = "ipol.sdek";
+    static $MODULE_LBL   = "IPOLSDEK_";
+    static $MODULE_TOKEN = 'IPOLSDEK_MODULE_TOKEN';
+    static $WIDGET_TOKEN = 'IPOLSDEK_WIDGET_TOKEN';
 
     public static function getAjaxAction($action,$subaction){
 		Ipolh\SDEK\subscribeHandler::getAjaxAction($action,$subaction);
+    }
+
+    /**
+     * Get module security token
+     * @return mixed
+     */
+    public static function getModuleToken()
+    {
+        return $_SESSION[self::$MODULE_TOKEN];
+    }
+
+    /**
+     * Create module security token and set in session
+     */
+    public static function createModuleToken()
+    {
+        if (empty($_SESSION[self::$MODULE_TOKEN])) {
+            $_SESSION[self::$MODULE_TOKEN] = self::makeSecurityToken();
+        }
+    }
+
+    /**
+     * Get widget security token
+     * @return mixed
+     */
+    public static function getWidgetToken()
+    {
+        return $_SESSION[self::$WIDGET_TOKEN];
+    }
+
+    /**
+     * Create widget security token and set in session
+     */
+    public static function createWidgetToken()
+    {
+        if (empty($_SESSION[self::$WIDGET_TOKEN])) {
+            $_SESSION[self::$WIDGET_TOKEN] = self::makeSecurityToken();
+        }
+    }
+
+    /**
+     * Make security token used in ajax calls
+     *
+     * @return mixed|string
+     */
+    public static function makeSecurityToken()
+    {
+        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+            $rand = random_bytes(32);
+        } else if (function_exists('mcrypt_create_iv')) {
+            $rand = mcrypt_create_iv(32, MCRYPT_DEV_URANDOM);
+        } else {
+            $rand = openssl_random_pseudo_bytes(32);
+        }
+
+        return bin2hex($rand);
+    }
+
+    /**
+     * Checks if given tokens equal
+     *
+     * @param $tokenA
+     * @param $tokenB
+     * @return bool
+     */
+    public static function checkTokens($tokenA, $tokenB)
+    {
+        return hash_equals($tokenA, $tokenB);
     }
 
     /*()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()
@@ -66,30 +136,10 @@ class sdekHelper{
 
 
     static function zajsonit($handle){
-        if(LANG_CHARSET !== 'UTF-8'){
-            if(is_array($handle))
-                foreach($handle as $key => $val){
-                    unset($handle[$key]);
-                    $key=self::zajsonit($key);
-                    $handle[$key]=self::zajsonit($val);
-                }
-            else
-                $handle=$GLOBALS['APPLICATION']->ConvertCharset($handle,LANG_CHARSET,'UTF-8');
-        }
-        return $handle;
+        return \Ipolh\SDEK\Bitrix\Tools::encodeToUTF8($handle);
     }
     static function zaDEjsonit($handle){
-        if(LANG_CHARSET !== 'UTF-8'){
-            if(is_array($handle))
-                foreach($handle as $key => $val){
-                    unset($handle[$key]);
-                    $key=self::zaDEjsonit($key);
-                    $handle[$key]=self::zaDEjsonit($val);
-                }
-            else
-                $handle=$GLOBALS['APPLICATION']->ConvertCharset($handle,'UTF-8',LANG_CHARSET);
-        }
-        return $handle;
+        return \Ipolh\SDEK\Bitrix\Tools::encodeFromUTF8($handle);
     }
 
     static function toUpper($str){
@@ -120,35 +170,7 @@ class sdekHelper{
 
 
     public static function sendToSDEK($XML=false,$where=false,$get=false){
-        if(!$where) return false;
-        if ($where !== 'ordersPackagesPrint') // Damn undocumented API changes...
-            $where .= '.php';
-        $where .= (($get) ? "?".$get : '');
-
-        $ch = curl_init();
-        $specialUrl = defined('IPOLSDEK_BASIC_URL') ? constant('IPOLSDEK_BASIC_URL') : false;
-        if($specialUrl) {
-            curl_setopt($ch, CURLOPT_URL, $specialUrl . $where);
-        } else {
-            curl_setopt($ch, CURLOPT_URL, 'https://integration.cdek.ru/' . $where);
-        }
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        if($XML){
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(self::zajsonit(array('xml_request' => $XML))));
-        }
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array("Content-type: application/x-www-form-urlencoded"));
-
-        $result = curl_exec($ch);
-        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        return array(
-            'code'   => $code,
-            'result' => $result
-        );
+        return \Ipolh\SDEK\Legacy\transitApplication::sendToSDEK($XML,$where,$get);
     }
 
     static function getXMLHeaders($auth = false){
@@ -521,7 +543,7 @@ class sdekHelper{
         return $arCities;
     }
 	
-	public function getCountryCode($country = 'rus'){
+	public static function getCountryCode($country = 'rus'){
 		$arCodes = array(
 			'rus' => 643,
 			'blr' => 112,
@@ -746,12 +768,15 @@ CModule::AddAutoloadClasses(
         'sdekShipment'				 => '/classes/lib/sdekShipment.php',
         'sdekShipmentCollection'	 => '/classes/lib/sdekShipmentCollection.php',
         '\\Ipolh\\SDEK\\abstractGeneral'  => '/classes/general/abstractGeneral.php',
+        '\\Ipolh\\SDEK\\AuthHandler'      => '/classes/general/AuthHandler.php',
 		'\\Ipolh\\SDEK\\subscribeHandler' => '/classes/general/subscribeHandler.php',
+        '\\Ipolh\\SDEK\\PointsHandler'    => '/classes/general/PointsHandler.php',
 		'\\Ipolh\\SDEK\\pvzWidjetHandler' => '/classes/general/pvzWidjetHandler.php',
 		'\\Ipolh\\SDEK\\option'           => '/classes/general/option.php',
     )
 );
 
-
-
+// Create security tokens used for AJAX calls
+sdekHelper::createModuleToken();
+sdekHelper::createWidgetToken();
 ?>

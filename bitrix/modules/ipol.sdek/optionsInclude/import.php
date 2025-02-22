@@ -17,6 +17,7 @@
 			if(IPOLSDEK_cityImport.stat === 'killed') return;
 			data.timeOut = IPOLSDEK_cityImport.timeout;
 			data.isdek_action  = 'handleImport';
+            data.isdek_token = '<?=sdekHelper::getModuleToken()?>';
 			if(typeof(data.mode) !== 'undefined')
 				IPOLSDEK_cityImport.setCount(IPOLSDEK_cityImport.timeout);
 			$.ajax({
@@ -98,7 +99,7 @@
 			IPOLSDEK_cityImport.stat = 'killed';
 			$.post(
 				"/bitrix/js/<?=$module_id?>/ajax.php",
-				{isdek_action:'setImport',mode:'N'},
+				{isdek_action:'setImport',isdek_token:'<?=sdekHelper::getModuleToken()?>',mode:'N'},
 				function(data){window.location.reload();}
 			);
 		},

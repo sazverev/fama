@@ -57,7 +57,6 @@
 
 				if(!isset($this->profiles) || !is_array($this->profiles))
 					$this->profiles = array();
-
 				if($result['success']){
 					$addTerm = intval(\Ipolh\SDEK\option::get('termInc'));
 					$this->profiles[$profile] = array(

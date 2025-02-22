@@ -147,6 +147,76 @@ class Tools{
                 }
             }
         }
+
+        return false;
+    }
+
+    static function isModuleAjaxRequest()
+    {
+        return (array_key_exists('isdek_action',$_REQUEST)&& $_REQUEST['isdek_action']);
+    }
+
+
+    /**
+     * @param $handle
+     * @return array
+     * ѕреобразует данные из кодировки сайта в utf-8
+     */
+    public static function encodeToUTF8($handle){
+        if(LANG_CHARSET !== 'UTF-8') {
+            if (is_array($handle)) {
+                foreach ($handle as $key => $val) {
+                    unset($handle[$key]);
+                    $key          = self::encodeToUTF8($key);
+                    $handle[$key] = self::encodeToUTF8($val);
+                }
+            } elseif (is_object($handle)){
+                $arCorresponds = array(); // why = because
+                foreach($handle as $key => $val){
+                    $arCorresponds[$key] = array('utf_key' => self::encodeToUTF8($key), 'utf_val' => self::encodeToUTF8($val));
+                }
+                foreach($arCorresponds as $key => $new)
+                {
+                    unset($handle->$key);
+                    $utf_key = $new['utf_key'];
+                    $handle->$utf_key = $new['utf_val'];
+                }
+            }else {
+                $handle = $GLOBALS['APPLICATION']->ConvertCharset($handle, LANG_CHARSET, 'UTF-8');
+            }
+        }
+        return $handle;
+    }
+
+    /**
+     * @param $handle
+     * @return array
+     * ѕреобразует данные из utf-8 в кодировку сайта
+     */
+    public static function encodeFromUTF8($handle){
+        if(LANG_CHARSET !== 'UTF-8'){
+            if(is_array($handle)) {
+                foreach ($handle as $key => $val) {
+                    unset($handle[$key]);
+                    $key          = self::encodeFromUTF8($key);
+                    $handle[$key] = self::encodeFromUTF8($val);
+                }
+            } elseif (is_object($handle)){
+                $arCorresponds = array();
+                foreach($handle as $key => $val){
+                    $arCorresponds[$key] = array('site_encode_key' => self::encodeFromUTF8($key), 'site_encode_val' => self::encodeFromUTF8($val));
+                }
+                foreach($arCorresponds as $key => $new)
+                {
+                    unset($handle->$key);
+                    $site_encode_key = $new['site_encode_key'];
+                    $handle->$site_encode_key = $new['site_encode_val'];
+                }
+            } else {
+                $handle = $GLOBALS['APPLICATION']->ConvertCharset($handle, 'UTF-8', LANG_CHARSET);
+            }
+        }
+        return $handle;
     }
 }
 ?>

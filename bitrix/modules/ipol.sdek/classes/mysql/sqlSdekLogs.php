@@ -98,6 +98,13 @@
 			return $res;
 		}
 
+		public static function getByAcc($acc){
+		    global $DB;
+		    $res = $DB->Query("SELECT * FROM ".self::$tableName." WHERE ACCOUNT='".$DB->ForSql($acc)."'", false, "File: ".__FILE__."<br>Line: ".__LINE__)->Fetch();
+
+		    return $res;
+		}
+
 		public static function select($arFilter=array()){
 			global $DB;
 			$strSql='';

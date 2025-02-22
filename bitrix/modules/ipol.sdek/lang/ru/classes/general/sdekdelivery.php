@@ -79,4 +79,5 @@ $MESS ['IPOLSDEK_SHIPMENT_ERRGOODS']    = "Не заданы товары";
 
 $MESS ['IPOLSDEK_DEAD_SERVER']    = "Сервер недоступен";
 $MESS ['IPOLSDEK_BAD_SERVER']     = "Некорректный ответ сервера";
+$MESS ['IPOLSDEK_HINT_FOR_TRANSIT'] = "Невозможно осуществить доставку по этому направлению при заданных условиях";
 ?>

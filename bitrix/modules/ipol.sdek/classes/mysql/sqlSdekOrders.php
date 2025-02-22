@@ -11,7 +11,7 @@ class sqlSdekOrders
 		// STATUS - response from iml
 		// MESSAGE - info from server
 		// OK - 0 / 1 - was confirmed
-		// UPTIME - время добавления
+		// UPTIME - order add time
 		
 		global $DB;
         
@@ -47,7 +47,57 @@ class sqlSdekOrders
 	public static function select($arOrder=array("ID","DESC"),$arFilter=array(),$arNavStartParams=array())
 	{
 		global $DB;
-		
+
+		if(!$arFilter){
+		    $arFilter = array();
+        }
+		$possFields = self::getPossFilterFields();
+		$_arFilter = $arFilter;
+		$arFilter  = array();
+		foreach ($_arFilter as $key => $val){
+		    $field = self::checkFilterField($key,$possFields);
+		    if($field){
+		        $skip = false;
+                switch ($possFields[$field]){
+                    case 'int'    :
+                        if (!is_array($val))
+                        {
+                            $val = (int)$val;
+                        }
+                        else
+                        {
+                            foreach ($val as $vKey => $vData)
+                            {
+                                $val[$vKey] = (int)$vData;
+                            }
+                        }
+                        break;
+                    case 'string' :
+                        if (!is_array($val))
+                        {
+                            $val = (string)$val;
+                            if(strpos($val,'(') !== false){$skip = true;}
+                        }
+                        else
+                        {
+                            foreach ($val as $vKey => $vData)
+                            {
+                                $val[$vKey] = (string)$vData;
+                                if(strpos($val[$vKey],'(') !== false){unset($val[$vKey]);}
+                            }
+                            if (!count($val))
+                            {
+                                $skip = true;
+                            }
+                        }
+                        break;
+                }
+                if(!$skip) {
+                    $arFilter[$key] = $val;
+                }
+            }
+        }
+
 		$strSql='';
 		
 		$where='';
@@ -60,29 +110,29 @@ class sqlSdekOrders
 			foreach($arFilter as $field => $value)
 			{
 				if($field == 'SOURCE' && $value == 0)
-					$where.= ' and '.self::getSource('order');
+					$where.= ' and '.$DB->ForSql(self::getSource('order'));
 				else{
 					if(strpos($field,'!')!==false)
-						$where.=' and '.substr($field,1).' != "'.$value.'"';
+						$where.=' and '.$DB->ForSql(substr($field,1)).' != "'.$DB->ForSql($value).'"';
 					elseif(strpos($field,'<=')!==false)
-						$where.=' and '.substr($field,2).' <= "'.$value.'"';				
+						$where.=' and '.$DB->ForSql(substr($field,2)).' <= "'.$DB->ForSql($value).'"';
 					elseif(strpos($field,'>=')!==false)
-						$where.=' and '.substr($field,2).' >= "'.$value.'"';
+						$where.=' and '.$DB->ForSql(substr($field,2)).' >= "'.$DB->ForSql($value).'"';
 					elseif(strpos($field,'>')!==false)
-						$where.=' and '.substr($field,1).' > "'.$value.'"';				
+						$where.=' and '.$DB->ForSql(substr($field,1)).' > "'.$DB->ForSql($value).'"';
 					elseif(strpos($field,'<')!==false)
-						$where.=' and '.substr($field,1).' < "'.$value.'"';
+						$where.=' and '.$DB->ForSql(substr($field,1)).' < "'.$DB->ForSql($value).'"';
 					else
 					{
 						if(is_array($value))
 						{
 							$where.=' and (';
 							foreach($value as $val)
-								$where.=$field.' = "'.$val.'" or ';
+								$where.=$DB->ForSql($field).' = "'.$DB->ForSql($val).'" or ';
 							$where=substr($where,0,strlen($where)-4).")";
 						}
 						else
-							$where.=' and '.$field.' = "'.$value.'"';
+							$where.=' and '.$DB->ForSql($field).' = "'.$DB->ForSql($value).'"';
 					}
 				}
 			}
@@ -96,7 +146,7 @@ class sqlSdekOrders
 		
 		$err_mess = "";
 		$cnt=$DB->Query("SELECT COUNT(*) as C FROM ".self::$tableName." ".$strSql, false, $err_mess.__LINE__)->Fetch();
-		
+
 		if($arNavStartParams['nPageSize']==0)
 			$arNavStartParams['nPageSize']=$cnt['C'];
 		
@@ -137,7 +187,7 @@ class sqlSdekOrders
 		global $DB;
 		$shipmentId=$DB->ForSql($shipmentId);
 		$strSql =
-            "SELECT PARAMS, STATUS, SDEK_ID, MESSAGE, OK, MESS_ID, ORDER_ID ".
+            "SELECT PARAMS, STATUS, SDEK_ID, MESSAGE, OK, MESS_ID, ORDER_ID, ACCOUNT ".
             "FROM ".self::$tableName." ".
 			"WHERE ORDER_ID = '".$shipmentId."'  && ".self::getSource('shipment');
 		$res = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
@@ -207,5 +257,21 @@ class sqlSdekOrders
 	private static function getSource($mode='order'){
 		return ($mode == 'order' || $mode == '') ? '(SOURCE <=> NULL || SOURCE = 0)' : "SOURCE = '1'";
 	}
+
+	protected static function getPossFilterFields()
+    {
+        return array("ID" => 'int',"MESS_ID" => 'int',"PARAMS" => 'text',"ORDER_ID"=>'int',"SOURCE"=>'int',"SDEK_ID"=>'int',"STATUS"=>'string',"MESSAGE"=> 'text',"ACCOUNT"=>'int',"OK"=>'string',"UPTIME"=>'string');
+    }
+
+    protected static function checkFilterField($field,$filterFields)
+    {
+        $arKeys = array_keys($filterFields);
+        foreach($arKeys as $_field){
+            if(strpos($field,$_field) !== false){
+                return $_field;
+            }
+        }
+        return false;
+    }
 }
 ?>

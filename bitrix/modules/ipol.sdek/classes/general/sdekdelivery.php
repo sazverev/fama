@@ -206,7 +206,6 @@ class CDeliverySDEK extends sdekHelper{
 		// defining cityTo
         self::$bitrixCity  = $arOrder['LOCATION_TO'];
 		$arCity = self::getCity($arOrder['LOCATION_TO'],true);
-
 		if($arCity){
 			self::$sdekCity = $arCity['SDEK_ID'];
 			self::$sdekCityCntr = ($arCity['COUNTRY']) ? $arCity['COUNTRY'] : 'rus';
@@ -231,7 +230,6 @@ class CDeliverySDEK extends sdekHelper{
 						}
 					}
 				}
-
 				if(
 					(
 						in_array($arCity['COUNTRY'],$countries) ||
@@ -327,7 +325,6 @@ class CDeliverySDEK extends sdekHelper{
 			self::pickupLoader();
 		
 		\Ipolh\SDEK\Bitrix\Admin\Logger::compability($arKeys);
-
 		return $arKeys;
 	}
 
@@ -582,93 +579,12 @@ class CDeliverySDEK extends sdekHelper{
 
 	// обертка класса расчета доставки
 	static function calculateDost($tarif,$mode = false){
-		try {
-			$calc = new CalculatePriceDeliverySdek();
-			$timeOut = \Ipolh\SDEK\option::get('dostTimeout');
-			if(floatval($timeOut) <= 0) $timeOut = 6;
-			$calc->setTimeout($timeOut);
-			$calc->setAuth(self::$auth['account'],self::$auth['password']);
-			$calc->setSenderCityId(self::$sdekSender);
-			$calc->setReceiverCityId(self::$sdekCity);
-			// кастомный урл калькул€ции
-			if(defined('IPOLSDEK_CALCULATE_URL')){
-			    $calc->setCustomUrl(constant('IPOLSDEK_CALCULATE_URL'));
-            }
-			// $calc->setDateExecute(date()); 2012-08-20 //устанавливаем дату планируемой отправки
-			//устанавливаем тариф по-умолчанию
-			if(is_numeric($tarif))
-				$calc->setTariffId($tarif);
-			//задаЄм список тарифов с приоритетами
-			else{
-				$arPriority = self::getListOfTarifs($tarif,$mode);
+        $app = \Ipolh\SDEK\abstractGeneral::makeApplication(self::$auth['account'],self::$auth['password']);
+	    $controller = new \Ipolh\SDEK\Bitrix\Controller\Calculator($app);
+        $controller->makeShipments(self::$sdekSender,self::$sdekCity,self::$goods,$tarif,$mode);
+        $result = $controller->calculate();
 
-                foreach(GetModuleEvents(self::$MODULE_ID,"onTarifPriority",true) as $arEvent)
-                    ExecuteModuleEventEx($arEvent,Array(&$arPriority,$tarif));
-
-				if(!count($arPriority))
-					return array('error' => 'no_tarifs');
-				else
-					foreach($arPriority as $tarId)
-						$calc->addTariffPriority($tarId);
-			}
-
-			// $calc->setModeDeliveryId(3); //устанавливаем режим доставки
-			//добавл€ем места в отправление
-			// кг, см
-			if(array_key_exists('W',self::$goods)){
-				$calc->addGoodsItemBySize(self::$goods['W'],self::$goods['D_W'],self::$goods['D_H'],self::$goods['D_L']);
-			}else
-				foreach(self::$goods as $arGood)
-					$calc->addGoodsItemBySize($arGood['W'],$arGood['D_W'],$arGood['D_H'],$arGood['D_L']);
-			
-			$arServices = false;
-			foreach(GetModuleEvents(self::$MODULE_ID, "onCalculatePriceDelivery", true) as $arEvent){
-				$arServices = ExecuteModuleEventEx($arEvent,Array($tarif,$mode,array(
-					'CITY_FROM' => self::$sdekSender,
-					'CITY_TO'   => self::$sdekCity,
-					'GOODS'     => self::$goods
-				)));
-			}
-			if($arServices && is_array($arServices)){
-				$calc->setServices($arServices);
-			}
-
-			if($calc->calculate()===true){
-			    \Ipolh\SDEK\option::set('sdekDeadServer',false);
-				$res = $calc->getResult();
-				if(!is_array($res))
-					$arReturn['error'] = GetMessage('IPOLSDEK_DELIV_SDEKISDEAD');
-				else{
-					$arReturn = array(
-						'success'  		  => true,
-						'price'    		  => $res['result']['price'],
-						'termMin'  		  => $res['result']['deliveryPeriodMin'],
-						'termMax'  		  => $res['result']['deliveryPeriodMax'],
-						'dateMin'  		  => $res['result']['deliveryDateMin'],
-						'dateMax'  		  => $res['result']['deliveryDateMax'],
-						'tarif'    		  => $res['result']['tariffId'],
-						'currency' 		  => $res['result']['currency'],
-						'priceByCurrency' => $res['result']['priceByCurrency']
-					);
-					if(array_key_exists('cashOnDelivery',$res['result']))
-						$arReturn['priceLimit'] = $res['result']['cashOnDelivery'];
-				}
-			}elseif($calc->getResult() == 'noanswer'){
-                \Ipolh\SDEK\option::set('sdekDeadServer',time());
-				$arReturn['error'] = GetMessage('IPOLSDEK_DEAD_SERVER');
-			}elseif($calc->getResult() == 'badanswer'){
-				$arReturn['error'] = GetMessage('IPOLSDEK_BAD_SERVER');
-			}else{
-				$err = $calc->getError();
-				if(isset($err['error'])&&!empty($err))
-					foreach($err['error'] as $e)
-						$arReturn[$e['code']] = $e['text'];
-			}
-		} catch (Exception $e){
-			$arReturn['error'] = $e->getMessage();
-		}
-
-		return $arReturn;
+        return $result;
 	}
 
 	static function getActiveCountries(){

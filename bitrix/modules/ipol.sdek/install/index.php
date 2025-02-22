@@ -126,6 +126,20 @@ Class ipol_sdek extends CModule{
     function DoInstall(){
         global $DB, $APPLICATION, $step;
 		$this->errors = false;
+
+        if(!function_exists('curl_init'))
+        {
+            $GLOBALS['IPOL_SDEK_LBL_INSTALL_ERROR'] = GetMessage('IPOLSDEK_NOCURL');
+        }elseif(!cmodule::includeModule('sale')){
+            $GLOBALS['IPOL_SDEK_LBL_INSTALL_ERROR'] = GetMessage('IPOLSDEK_NOSALE');
+        }
+
+        if($GLOBALS['IPOL_SDEK_LBL_INSTALL_ERROR'])
+        {
+            $GLOBALS['APPLICATION']->IncludeAdminFile(GetMessage('IPOL_SDEK_INSTALL_ERROR_TITLE'), __DIR__ .'/error.php');
+
+            return;
+        }
 		
 		$this->InstallDB();
 		$this->InstallEvents();
