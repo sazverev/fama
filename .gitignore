@@ -4,11 +4,20 @@ bitrix/templates/
 upload/*
 mapp/
 video/
+category_files/
+dilers_files/
+images/
+imgt/
+new-vodniki/
+pos_files/
+title-img/
 
 # НЕ исключаем нужные директории
 !bitrix/modules/
 !bitrix/modules/aspro.next/
 !bitrix/modules/sotbit.seometa/
+!bitrix/modules/roistat.formprocessor/
+!bitrix/modules/ipol.sdek/
 
 !bitrix/components/sotbit/
 
@@ -69,6 +78,8 @@ vendor/
 *.restore
 *.html
 *.htm
+.bash_history
+
 
 # Исключаем медиафайлы
 # Изображения
