@@ -19,8 +19,9 @@ title-img/
 !bitrix/modules/roistat.formprocessor/
 !bitrix/modules/ipol.sdek/
 
-!bitrix/components/sotbit/
+!bitrix/components/
 !bitrix/components/aspro/
+!bitrix/components/sotbit/
 
 !/upload/.htaccess
 !/upload/index.php
