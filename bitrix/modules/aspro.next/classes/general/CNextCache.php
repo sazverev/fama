@@ -546,7 +546,11 @@ if(!class_exists("CNextCache")){
 				$func = "GetNext";
 			}
 			while($item = $dbRes->$func()){
-				if(($existKey = ($arResultIDsIndexes[$item["ID"]] ? $arResultIDsIndexes[$item["ID"]] : ($arResultIDsIndexes[$item["ID"]] !== null ? false : null))) !== null){
+                if (($existKey = (
+                    isset($item["ID"]) && isset($arResultIDsIndexes[$item["ID"]])
+                        ? $arResultIDsIndexes[$item["ID"]]
+                        : (isset($item["ID"]) && array_key_exists($item["ID"], $arResultIDsIndexes) ? false : null)
+                    )) !== null) {
 					$existItem = &$arRes[$existKey];
 					if($bIsIblockElement){
 						unset($item["IBLOCK_SECTION_ID"]);

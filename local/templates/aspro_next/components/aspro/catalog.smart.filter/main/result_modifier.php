@@ -28,7 +28,7 @@ $sort = array( 'ASPRO_FILTER_SORT' => array (
 $arResult["ITEMS"] = $sort + $arResult["ITEMS"];
 
 $arAvailableSort = array();
-$arSorts = $arParams["SORT_BUTTONS"];
+$arSorts = is_array($arParams["SORT_BUTTONS"]) ? $arParams["SORT_BUTTONS"] : (array) $arParams["SORT_BUTTONS"];
 
 if(in_array("POPULARITY", $arSorts)){
 	$arAvailableSort["SHOWS"] = array("SHOWS", "desc");
@@ -71,7 +71,7 @@ if(in_array("PRICE", $arSorts)){
 		}
 	}
 }
-if(in_array("QUANTITY", $arSorts)){
+if(is_array($arSorts) && in_array("QUANTITY", $arSorts)){
 	$arAvailableSort["CATALOG_AVAILABLE"] = array("QUANTITY", "desc");
 }
 $sort = "SHOWS";

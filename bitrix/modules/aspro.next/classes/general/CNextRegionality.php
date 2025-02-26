@@ -157,7 +157,7 @@ if(!class_exists('CNextRegionality'))
 						{
 							foreach($arItems as $key => $arItem)
 							{
-								if(!$arItem['PROPERTY_MAIN_DOMAIN'] && $arItem['PROPERTY_DEFAULT_VALUE'] == 'Y')
+								if(!isset($arItem['PROPERTY_MAIN_DOMAIN']) && isset($arItem['PROPERTY_DEFAULT_VALUE']) == 'Y')
 									$arItems[$key]['PROPERTY_MAIN_DOMAIN'] = $_SERVER['HTTP_HOST'];
 
 								//domains props

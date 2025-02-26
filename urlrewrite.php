@@ -208,4 +208,12 @@ $arUrlRewrite=array (
     'PATH' => '/blog/index.php',
     'SORT' => 100,
   ),
+  192 => 
+  array (
+    'CONDITION' => '#^/#',
+    'RULE' => '',
+    'ID' => 'bitrix:news',
+    'PATH' => '/indexblocks_index1.php',
+    'SORT' => 100,
+  ),
 );

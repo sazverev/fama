@@ -1942,7 +1942,7 @@ class CNext{
 				if($arTheme['VIEWED_TYPE'] == 'LOCAL')
 					CJSCore::Init(array('ls'));
 
-				if((!isset($_SERVER['HTTP_X_REQUESTED_WITH']) ||(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest')) && (strtolower($_REQUEST['ajax']) != 'y'))
+				if((!isset($_SERVER['HTTP_X_REQUESTED_WITH']) ||(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest')) && (!isset($_REQUEST['ajax']) || strtolower($_REQUEST['ajax']) != 'y'))
 				{
 					$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/video_banner.js');
 					$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH.'/js/main.js');
@@ -5686,7 +5686,7 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 		if($bRestarted)
 			die();
 
-		if((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || (strtolower($_REQUEST['ajax']) == 'y'))
+		if((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') || (isset($_REQUEST['ajax']) && strtolower($_REQUEST['ajax']) == 'y'))
 		{
 			$APPLICATION->RestartBuffer();
 			$bRestarted = true;
