@@ -20,6 +20,7 @@ title-img/
 !bitrix/modules/ipol.sdek/
 
 !bitrix/components/sotbit/
+!bitrix/components/aspro/
 
 !/upload/.htaccess
 !/upload/index.php
