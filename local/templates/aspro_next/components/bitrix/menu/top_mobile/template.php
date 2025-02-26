@@ -6,7 +6,7 @@
 		<ul class="top">
 			<?foreach($arResult as $arItem):?>
 				<?$bShowChilds = $arParams['MAX_LEVEL'] > 1;?>
-				<?$bParent = $arItem['CHILD'] && $bShowChilds;?>
+				<?$bParent = isset($arItem['CHILD']) && $bShowChilds;?>
 				<?
 				if($isCatalogMenuExpanded){
 				    if(isset($arItem['PARAMS']['CLASS']) && strripos($arItem['PARAMS']['CLASS'], 'catalog') !==false) {

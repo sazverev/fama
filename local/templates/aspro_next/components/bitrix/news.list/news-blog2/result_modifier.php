@@ -28,7 +28,7 @@
 	{
 		foreach($arItems['ITEMS'] as $keyTmp => $arItem)
 		{
-			if($arItem['PROPERTIES']['BIG_BLOCK']['VALUE'] == 'Y')
+			if(isset($arItem['PROPERTIES']['BIG_BLOCK']['VALUE']) && $arItem['PROPERTIES']['BIG_BLOCK']['VALUE'] == 'Y')
 				$arItemsTmp[$key]['BIG_BLOCK'] = 'Y';
 		}
 	}

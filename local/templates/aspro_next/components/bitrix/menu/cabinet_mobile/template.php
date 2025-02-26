@@ -20,7 +20,7 @@
 					<li class="menu_title"><a href="<?=$link;?>"><?=GetMessage('CABINET_LINK2')?></a></li>
 					<?foreach($arResult as $arItem):?>
 						<?$bShowChilds = $arParams['MAX_LEVEL'] > 1;?>
-						<?$bParent = $arItem['CHILD'] && $bShowChilds;?>
+						<?$bParent = isset($arItem['CHILD']) && $bShowChilds;?>
 						<li<?=($arItem['SELECTED'] ? ' class="selected"' : '')?>>
 							<a class="dark-color<?=($bParent ? ' parent' : '')?>" href="<?=$arItem["LINK"]?>" title="<?=$arItem["TEXT"]?>">
 								<span><?=$arItem['TEXT']?></span>

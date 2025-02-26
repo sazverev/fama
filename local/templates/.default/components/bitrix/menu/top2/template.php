@@ -11,9 +11,9 @@ $iVisibleItemsMenu = ($arTheme['MAX_VISIBLE_ITEMS_MENU']['VALUE'] ? $arTheme['MA
 				<?foreach($arResult as $arItem):?>					
 					<?$bShowChilds = $arParams["MAX_LEVEL"] > 1;
 					$bWideMenu = (isset($arItem['PARAMS']['CLASS']) && strpos($arItem['PARAMS']['CLASS'], 'wide_menu') !== false);?>
-					<td class="menu-item unvisible <?=($arItem["CHILD"] ? "dropdown" : "")?> <?=(isset($arItem["PARAMS"]["CLASS"]) ? $arItem["PARAMS"]["CLASS"] : "");?>  <?=($arItem["SELECTED"] ? "active" : "")?>">
+					<td class="menu-item unvisible <?=(isset($arItem["CHILD"]) ? "dropdown" : "")?> <?=(isset($arItem["PARAMS"]["CLASS"]) ? $arItem["PARAMS"]["CLASS"] : "");?>  <?=($arItem["SELECTED"] ? "active" : "")?>">
 						<div class="wrap">
-							<a class="<?=($arItem["CHILD"] && $bShowChilds ? "dropdown-toggle" : "")?>" href="<?=$arItem["LINK"]?>">
+							<a class="<?=(isset($arItem["CHILD"]) && $bShowChilds ? "dropdown-toggle" : "")?>" href="<?=$arItem["LINK"]?>">
 								<?if ($arItem["TEXT"]=='Каталог решений'):?>
 									
 								
@@ -31,7 +31,7 @@ $iVisibleItemsMenu = ($arTheme['MAX_VISIBLE_ITEMS_MENU']['VALUE'] ? $arTheme['MA
 									<div class="line-wrapper"><span class="line"></span></div>
 								</div><?endif;?>
 							</a>
-							<?if($arItem["CHILD"] && $bShowChilds):?>
+							<?if(isset($arItem["CHILD"]) && $bShowChilds):?>
 								<span class="tail"></span>
 								<ul class="dropdown-menu">
 									<?foreach($arItem["CHILD"] as $arSubItem):?>
@@ -44,7 +44,7 @@ $iVisibleItemsMenu = ($arTheme['MAX_VISIBLE_ITEMS_MENU']['VALUE'] ? $arTheme['MA
 													<div class="menu_img"><img src="<?=$arImg["src"]?>" alt="<?=$arSubItem["TEXT"]?>" title="<?=$arSubItem["TEXT"]?>" /></div>
 												<?endif;?>
 											<?endif;?>
-											<a href="<?=$arSubItem["LINK"]?>" title="<?=$arSubItem["TEXT"]?>"><span class="name smart1"><?=$arSubItem["TEXT"]?></span><?=($arSubItem["CHILD"] && $bShowChilds ? '<span class="arrow"><i></i></span>' : '')?></a>
+											<a href="<?=$arSubItem["LINK"]?>" title="<?=$arSubItem["TEXT"]?>"><span class="name smart1"><?=$arSubItem["TEXT"]?></span><?=(isset($arSubItem["CHILD"]) && $bShowChilds ? '<span class="arrow"><i></i></span>' : '')?></a>
 											<?if($arSubItem["CHILD"] && $bShowChilds):?>
 												<?$iCountChilds = count($arSubItem["CHILD"]);?>
 												<ul class="dropdown-menu toggle_menu">
