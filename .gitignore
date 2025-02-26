@@ -122,4 +122,4 @@ vendor/
 
 # Исключаем кеш-файлы
 .cache/
-cache/
+cache/bitrix/modules/ipol.sdek/log.txt
