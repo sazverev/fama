@@ -3935,7 +3935,7 @@ class CNext{
 			$strName = 'PROP_'.$arProp['ID'];
 			$arShowValues = self::GetRowValues($arFilter, $strName, $arItem);
 
-			if(in_array($arCurrentOffer['TREE'][$strName], $arShowValues))
+			if(is_array($arShowValues) && in_array($arCurrentOffer['TREE'][$strName], $arShowValues))
 			{
 				$arFilter[$strName] = $arCurrentOffer['TREE'][$strName];
 			}
@@ -4318,7 +4318,7 @@ if(($arProp["DISPLAY_TYPE"]=="P" || $arProp["DISPLAY_TYPE"]=="R" ) && $type_view
 					$arProp['VALUES'][$key]['STYLE'] = 'style="display: none"';
 				}
 
-				if(in_array($value, $arShowValues))
+				if(is_array($arShowValues) && in_array($value, $arShowValues))
 				{
 					if($selectMode)
 					{

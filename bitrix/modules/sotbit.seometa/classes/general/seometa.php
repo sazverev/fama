@@ -411,7 +411,7 @@ class CSeoMeta extends Bitrix\Iblock\Template\Functions\FunctionBase {
         return $rows;
     }
 
-    public function SetMetaCondition(
+    static public function SetMetaCondition(
         $rule,
         $SectionId,
         $IblockId
@@ -463,7 +463,7 @@ class CSeoMeta extends Bitrix\Iblock\Template\Functions\FunctionBase {
         return $return;
     }
 
-    private function ParseArray(
+    static private function ParseArray(
         $array
     ) {
         $result = self::PrepareConditions($array['CHILDREN']);
@@ -485,7 +485,7 @@ class CSeoMeta extends Bitrix\Iblock\Template\Functions\FunctionBase {
         return $return;
     }
 
-    private function PrepareConditions(
+    static private function PrepareConditions(
         $conditions
     ) {
         $MassCond = [];
@@ -589,7 +589,7 @@ class CSeoMeta extends Bitrix\Iblock\Template\Functions\FunctionBase {
         return $MassCond;
     }
 
-    private function CheckElementsEqual($idSection, $idCondition, $type = 0) {
+    static private function CheckElementsEqual($idSection, $idCondition, $type = 0) {
         $return = 0;
         $FilterResult = self::$FilterResult;
         if($type === 0) {
@@ -885,7 +885,7 @@ class CSeoMeta extends Bitrix\Iblock\Template\Functions\FunctionBase {
         return $return;
     }
 
-    private function ANDConditions(
+    static private function ANDConditions(
         $conditions
     ) {
         return (int)!in_array(0, $conditions);
