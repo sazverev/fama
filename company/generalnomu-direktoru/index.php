@@ -28,7 +28,7 @@ $APPLICATION->SetTitle("Форма сообщения Генеральному �
 			0 => "",
 			1 => "",
 		),
-		"RESULT_ID" => $_REQUEST[RESULT_ID],
+		"RESULT_ID" => $_REQUEST["RESULT_ID"],
 		"SEF_MODE" => "N",
 		"SHOW_ADDITIONAL" => "N",
 		"SHOW_ANSWER_VALUE" => "N",

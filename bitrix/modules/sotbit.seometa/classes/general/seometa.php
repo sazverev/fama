@@ -98,11 +98,16 @@ class CSeoMeta extends Bitrix\Iblock\Template\Functions\FunctionBase {
     public static function excludeFilterParams(
         &$filter = []
     ) {
-        $ar_exceptions = explode(";",COption::GetOptionString( self::MODULE_ID,'FILTER_EXCEPTION_SETTINGS', '', SITE_ID));
+        $ar_exceptions = explode(";", COption::GetOptionString(self::MODULE_ID, 'FILTER_EXCEPTION_SETTINGS', '', SITE_ID));
+        // Если $filter не массив, делаем его пустым массивом
+        if (!is_array($filter)) {
+            $filter = [];
+        }
         if (is_array($ar_exceptions)) {
             foreach ($ar_exceptions as $except) {
-                if (array_key_exists(trim($except), $filter)) {
-                    unset($filter[trim($except)]);
+                $except = trim($except);
+                if ($except !== '' && array_key_exists($except, $filter)) {
+                    unset($filter[$except]);
                 }
             }
         }

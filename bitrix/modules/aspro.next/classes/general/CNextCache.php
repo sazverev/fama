@@ -591,7 +591,7 @@ if(!class_exists("CNextCache")){
 							$item["IBLOCK_SECTION_ID"] = self::_GetElementSectionsArray($item["ID"]);
 						unset($item["~IBLOCK_SECTION_ID"]);
 					}
-					if(in_array("ElementValues", $arSelectFields) && isset($item["IBLOCK_ID"]) && is_array($arSelectFields))
+					if(is_array($arSelectFields) && in_array("ElementValues", $arSelectFields) && isset($item["IBLOCK_ID"]))
 					{
 						$ipropValues = new \Bitrix\Iblock\InheritedProperty\ElementValues($item["IBLOCK_ID"], $item["ID"]);
 						$item["IPROPERTY_VALUES"] = $ipropValues->getValues();
